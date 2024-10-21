@@ -72,15 +72,19 @@ class _AuthScreenState extends State<AuthScreen> {
 
       // handle some exceptions...
 
-      ScaffoldMessenger.of(context).clearSnackBars();
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(exception.message ?? "Xác thực thất bại."),
-        ),
-      );
-      setState(() {
-        _isAuthenticating = false;
-      });
+      if (mounted) {
+        ScaffoldMessenger.of(context).clearSnackBars();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(exception.message ?? "Xác thực thất bại."),
+          ),
+        );
+        setState(() {
+          _isAuthenticating = false;
+        });
+      }
+
+      return;
     }
   }
 
