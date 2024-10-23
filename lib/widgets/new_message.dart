@@ -10,7 +10,7 @@ class NewMessage extends StatefulWidget {
 }
 
 class _NewMessageState extends State<NewMessage> {
-  var _messageController = TextEditingController();
+  final _messageController = TextEditingController();
 
   @override
   void dispose() {
@@ -54,12 +54,29 @@ class _NewMessageState extends State<NewMessage> {
               controller: _messageController,
               textCapitalization: TextCapitalization.sentences,
               autocorrect: false,
-              decoration: InputDecoration(labelText: "Nhập tin nhắn..."),
+              decoration: InputDecoration(
+                labelText: "Nhập tin nhắn...",
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(18),
+                  borderSide: BorderSide(width: 1.3),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(18),
+                  borderSide: BorderSide(
+                    width: 1.3,
+                    color: Theme.of(context).primaryColor,
+                  ),
+                ),
+              ),
             ),
           ),
           IconButton(
             onPressed: _submitMessage,
-            icon: Icon(Icons.send),
+            icon: Icon(
+              Icons.send,
+              color: Theme.of(context).primaryColor,
+              size: 35,
+            ),
           )
         ],
       ),
