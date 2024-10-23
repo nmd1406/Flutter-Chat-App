@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:chat_app/screens/forget_password.dart';
 import 'package:chat_app/widgets/user_image_picker.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -91,7 +92,7 @@ class _AuthScreenState extends State<AuthScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.primary,
+      backgroundColor: Theme.of(context).primaryColor,
       body: Center(
         child: SingleChildScrollView(
           child: Column(
@@ -122,47 +123,134 @@ class _AuthScreenState extends State<AuthScreen> {
                                 _selectedImage = pickedImage;
                               },
                             ),
-                          TextFormField(
-                            decoration: const InputDecoration(
-                              labelText: "Email",
-                            ),
-                            keyboardType: TextInputType.emailAddress,
-                            autocorrect: false,
-                            validator: (value) {
-                              if (value == null ||
-                                  value.trim().isEmpty ||
-                                  !value.contains('@')) {
-                                return "Email không hợp lệ.";
-                              }
-
-                              return null;
-                            },
-                            onSaved: (newValue) {
-                              _enteredEmail = newValue!;
-                            },
-                          ),
-                          if (!_isLogin)
-                            TextFormField(
-                              decoration:
-                                  InputDecoration(labelText: "Tên người dùng"),
-                              enableSuggestions: false,
+                          Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 12),
+                            child: TextFormField(
+                              decoration: InputDecoration(
+                                labelText: "Email",
+                                prefixIcon: Icon(Icons.email),
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(18),
+                                  borderSide: BorderSide(width: 1.3),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(18),
+                                  borderSide: BorderSide(
+                                    width: 1.3,
+                                    color: Theme.of(context).primaryColor,
+                                  ),
+                                ),
+                                focusedErrorBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(18),
+                                  borderSide: BorderSide(
+                                    width: 1.3,
+                                    color: Theme.of(context).colorScheme.error,
+                                  ),
+                                ),
+                                errorBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(18),
+                                  borderSide: BorderSide(
+                                    width: 1.3,
+                                    color: Theme.of(context).colorScheme.error,
+                                  ),
+                                ),
+                              ),
+                              keyboardType: TextInputType.emailAddress,
                               autocorrect: false,
                               validator: (value) {
                                 if (value == null ||
-                                    value.isEmpty ||
-                                    value.trim().length < 4) {
-                                  return "Tên người dùng phải có ít nhất 4 ký tự.";
+                                    value.trim().isEmpty ||
+                                    !value.contains('@')) {
+                                  return "Email không hợp lệ.";
                                 }
 
                                 return null;
                               },
                               onSaved: (newValue) {
-                                _enteredUsername = newValue!;
+                                _enteredEmail = newValue!;
                               },
                             ),
+                          ),
+                          if (!_isLogin)
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 12),
+                              child: TextFormField(
+                                decoration: InputDecoration(
+                                  labelText: "Tên người dùng",
+                                  prefixIcon: Icon(Icons.person),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(18),
+                                    borderSide: BorderSide(width: 1.3),
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(18),
+                                    borderSide: BorderSide(
+                                      width: 1.3,
+                                      color: Theme.of(context).primaryColor,
+                                    ),
+                                  ),
+                                  focusedErrorBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(18),
+                                    borderSide: BorderSide(
+                                      width: 1.3,
+                                      color:
+                                          Theme.of(context).colorScheme.error,
+                                    ),
+                                  ),
+                                  errorBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(18),
+                                    borderSide: BorderSide(
+                                      width: 1.3,
+                                      color:
+                                          Theme.of(context).colorScheme.error,
+                                    ),
+                                  ),
+                                ),
+                                enableSuggestions: false,
+                                autocorrect: false,
+                                validator: (value) {
+                                  if (value == null ||
+                                      value.isEmpty ||
+                                      value.trim().length < 4) {
+                                    return "Tên người dùng phải có ít nhất 4 ký tự.";
+                                  }
+
+                                  return null;
+                                },
+                                onSaved: (newValue) {
+                                  _enteredUsername = newValue!;
+                                },
+                              ),
+                            ),
                           TextFormField(
-                            decoration: const InputDecoration(
-                              labelText: 'Mật khẩu',
+                            decoration: InputDecoration(
+                              labelText: "Mật khẩu",
+                              prefixIcon: Icon(Icons.key),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(18),
+                                borderSide: BorderSide(width: 1.3),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(18),
+                                borderSide: BorderSide(
+                                  width: 1.3,
+                                  color: Theme.of(context).primaryColor,
+                                ),
+                              ),
+                              focusedErrorBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(18),
+                                borderSide: BorderSide(
+                                  width: 1.3,
+                                  color: Theme.of(context).colorScheme.error,
+                                ),
+                              ),
+                              errorBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(18),
+                                borderSide: BorderSide(
+                                  width: 1.3,
+                                  color: Theme.of(context).colorScheme.error,
+                                ),
+                              ),
                             ),
                             obscureText: true,
                             validator: (value) {
@@ -176,6 +264,25 @@ class _AuthScreenState extends State<AuthScreen> {
                               _enteredPassword = newValue!;
                             },
                           ),
+                          if (_isLogin)
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            ForgetPasswordScreen(),
+                                      ),
+                                    );
+                                  },
+                                  child: Text(
+                                    "Quên mật khẩu?",
+                                  ),
+                                ),
+                              ],
+                            ),
                           const SizedBox(height: 12),
                           if (_isAuthenticating) CircularProgressIndicator(),
                           if (!_isAuthenticating)
