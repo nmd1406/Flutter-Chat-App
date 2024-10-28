@@ -1,6 +1,8 @@
+import 'package:chat_app/services/auth_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+
+final _auth = AuthService();
 
 class ForgetPasswordScreen extends StatefulWidget {
   const ForgetPasswordScreen({super.key});
@@ -25,7 +27,7 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
     FocusScope.of(context).unfocus();
 
     try {
-      await FirebaseAuth.instance.sendPasswordResetEmail(email: _enteredEmail);
+      await _auth.resetPassword(_enteredEmail);
       if (mounted) {
         showDialog(
           context: context,
