@@ -1,23 +1,36 @@
-import 'package:chat_app/screens/chat.dart';
-import 'package:chat_app/services/auth_service.dart';
-import 'package:chat_app/services/user_service.dart';
-import 'package:chat_app/widgets/user_tile.dart';
+import 'package:chat_app/screens/find_friends.dart';
+import 'package:chat_app/screens/messages.dart';
+import 'package:chat_app/screens/setting.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
-final _userService = UserService();
-final _authService = AuthService();
-
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  int _currentPageIndex = 1;
+  final List<Widget> _screens = [
+    MessagesScreen(),
+    FindPeopleScreen(),
+    SettingScreen(),
+  ];
+
+  final List<String> _screenTitles = [
+    "FlutterChat",
+    "Mọi người",
+    "Cài đặt",
+  ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          "FlutterChat",
+          _screenTitles[_currentPageIndex],
           style: Theme.of(context).textTheme.headlineMedium!.copyWith(
                 color: Theme.of(context).primaryColor,
                 fontWeight: FontWeight.bold,
@@ -36,65 +49,25 @@ class HomeScreen extends StatelessWidget {
           ),
         ],
       ),
-      body: Column(
-        children: [
-          StreamBuilder(
-            stream: _userService.getUsersStream(),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(
-                  child: CircularProgressIndicator(),
-                );
-              }
-
-              if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                return Center(
-                  child: Text("Không có tin nhắn"),
-                );
-              }
-
-              final currentUserUid = _authService.getCurrentUserUid();
-              final usersData = snapshot.data!.docs
-                  .where((doc) => doc.id != currentUserUid)
-                  .toList();
-
-              return ListView.builder(
-                shrinkWrap: true,
-                itemCount: usersData.length,
-                itemBuilder: (context, index) {
-                  final user = usersData[index].data();
-                  final username = user["username"];
-                  final imageUrl = user["image_url"];
-
-                  return UserTile(
-                    username: username,
-                    imageUrl: imageUrl,
-                    onOpenMessage: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => ChatScreen(),
-                        ),
-                      );
-                    },
-                  );
-                },
-              );
-            },
-          ),
-        ],
-      ),
+      body: _screens[_currentPageIndex],
       bottomNavigationBar: NavigationBar(
+        onDestinationSelected: (value) {
+          setState(() {
+            _currentPageIndex = value;
+          });
+        },
+        selectedIndex: _currentPageIndex,
         destinations: <Widget>[
-          IconButton(
-            onPressed: () {},
+          NavigationDestination(
+            label: "Tin nhắn",
             icon: Icon(Icons.chat_rounded),
           ),
-          IconButton(
-            onPressed: () {},
+          NavigationDestination(
+            label: "Mọi người",
             icon: Icon(Icons.people),
           ),
-          IconButton(
-            onPressed: () {},
+          NavigationDestination(
+            label: "Cài đặt",
             icon: Icon(Icons.settings),
           ),
         ],
