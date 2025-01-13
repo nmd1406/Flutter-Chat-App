@@ -19,7 +19,7 @@ class UserTile extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.all(10.0),
         child: ListTile(
-          // contentPadding: EdgeInsets.all(8),
+          contentPadding: EdgeInsets.symmetric(vertical: 5, horizontal: 8),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(24),
           ),
@@ -31,7 +31,6 @@ class UserTile extends StatelessWidget {
             backgroundImage: NetworkImage(imageUrl),
           ),
           title: Text(username),
-          subtitle: Text("Tin nhan"),
         ),
       ),
     );
