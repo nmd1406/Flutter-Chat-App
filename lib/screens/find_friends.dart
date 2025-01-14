@@ -27,9 +27,10 @@ class _FindPeopleScreenState extends State<FindPeopleScreen> {
   Widget build(BuildContext context) {
     String query = _searchController.text;
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: const EdgeInsets.all(15.0),
+          padding: const EdgeInsets.all(14.0),
           child: SearchBar(
             controller: _searchController,
             hintText: "Tìm kiếm",
@@ -59,6 +60,20 @@ class _FindPeopleScreenState extends State<FindPeopleScreen> {
             ],
           ),
         ),
+        if (query.isEmpty)
+          Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 15,
+              vertical: 10,
+            ),
+            child: Text(
+              'Gợi ý',
+              style: Theme.of(context).textTheme.headlineSmall!.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: Theme.of(context).primaryColor,
+                  ),
+            ),
+          ),
         Expanded(
           child: StreamBuilder(
             stream: _userService.getUsersStream(),
@@ -75,6 +90,8 @@ class _FindPeopleScreenState extends State<FindPeopleScreen> {
                 );
               }
 
+              // List người dùng hiển thị không bao gồm bản thân
+              // Shuffle phục vụ cho chức năng gợi ý người dùng khác
               final currentUserUid = _authService.getCurrentUserUid();
               final userData = snapshot.data!.docs
                   .where((doc) => doc.id != currentUserUid)
@@ -83,7 +100,8 @@ class _FindPeopleScreenState extends State<FindPeopleScreen> {
                   final user = doc.data();
                   return user["username"].contains(query);
                 },
-              ).toList();
+              ).toList()
+                ..shuffle();
 
               if (userData.isEmpty) {
                 return Center(
@@ -91,11 +109,18 @@ class _FindPeopleScreenState extends State<FindPeopleScreen> {
                 );
               }
 
+              // Khi tìm kiếm người dùng thì hiển thị tất cả các kết quả trùng khớp
+              // Đối với phần gợi ý khi không tìm kiếm thì chỉ hiển thị tối đa 10 người dùng
+              int userDisplayCount = query.isEmpty
+                  ? (userData.length < 10 ? userData.length : 10)
+                  : userData.length;
+
               return ListView.builder(
                 shrinkWrap: true,
-                itemCount: userData.length,
+                itemCount: userDisplayCount,
                 itemBuilder: (context, index) {
                   final user = userData[index].data();
+                  final otherUserId = userData[index].id;
                   final username = user["username"];
                   final imageUrl = user["image_url"];
 
@@ -105,7 +130,10 @@ class _FindPeopleScreenState extends State<FindPeopleScreen> {
                     onOpenMessage: () {
                       Navigator.of(context).push(
                         MaterialPageRoute(
-                          builder: (context) => ChatScreen(),
+                          builder: (context) => ChatScreen(
+                            otherUserData: user,
+                            otherUserId: otherUserId,
+                          ),
                         ),
                       );
                     },
