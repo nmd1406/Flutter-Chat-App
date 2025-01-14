@@ -39,6 +39,7 @@ class MessagesScreen extends StatelessWidget {
               itemCount: usersData.length,
               itemBuilder: (context, index) {
                 final user = usersData[index].data();
+                final otherUserId = usersData[index].id;
                 final username = user["username"];
                 final imageUrl = user["image_url"];
 
@@ -48,7 +49,10 @@ class MessagesScreen extends StatelessWidget {
                   onOpenMessage: () {
                     Navigator.of(context).push(
                       MaterialPageRoute(
-                        builder: (context) => ChatScreen(),
+                        builder: (context) => ChatScreen(
+                          otherUserData: user,
+                          otherUserId: otherUserId,
+                        ),
                       ),
                     );
                   },
