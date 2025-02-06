@@ -25,11 +25,14 @@ class ChatService {
     ids.sort();
     final chatRoomId = ids.join('_');
 
-    await _firestore
-        .collection("chat_rooms")
-        .doc(chatRoomId)
-        .collection("messages")
-        .add(messageData);
+    final chatRoomRef = _firestore.collection("chat_rooms").doc(chatRoomId);
+    await chatRoomRef.set(
+      {"chatRoomId": ids},
+      SetOptions(merge: true),
+    );
+
+    var messageRef = chatRoomRef.collection("messages");
+    await messageRef.add(messageData);
   }
 
   Stream<QuerySnapshot<Map<String, dynamic>>> getMessages(
@@ -43,6 +46,13 @@ class ChatService {
         .doc(chatRoomId)
         .collection("messages")
         .orderBy("timeStamp", descending: true)
+        .snapshots();
+  }
+
+  Stream<QuerySnapshot<Map<String, dynamic>>> getPrivateChatRooms(String uid) {
+    return _firestore
+        .collection("chat_rooms")
+        .where("chatRoomId", arrayContains: uid)
         .snapshots();
   }
 }
