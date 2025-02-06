@@ -7,10 +7,12 @@ class UserService {
     return _firestore.collection("users").snapshots();
   }
 
-  Future<DocumentSnapshot<Map<String, dynamic>>> getUserData(
-      String userId) async {
-    final userData =
-        await FirebaseFirestore.instance.collection("users").doc(userId).get();
+  Stream<Map<String, dynamic>?> getUserData(String userId) {
+    final userData = FirebaseFirestore.instance
+        .collection("users")
+        .doc(userId)
+        .snapshots()
+        .map((doc) => doc.data());
     return userData;
   }
 }
