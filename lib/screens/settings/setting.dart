@@ -1,4 +1,4 @@
-import 'package:chat_app/screens/settings/user_setting.dart';
+import 'package:chat_app/screens/settings/account_setting.dart';
 import 'package:flutter/material.dart';
 
 import 'package:chat_app/services/auth_service.dart';
@@ -71,11 +71,11 @@ class SettingScreen extends StatelessWidget {
             _buildUsername(),
             const SizedBox(height: 45),
             SettingTile(
-              title: "Người dùng",
+              title: "Tài khoản",
               onTap: () {
                 Navigator.of(context).push(
                   MaterialPageRoute(
-                    builder: (context) => UserSetting(),
+                    builder: (context) => AccountSetting(),
                   ),
                 );
               },
