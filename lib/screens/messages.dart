@@ -3,7 +3,6 @@ import 'package:chat_app/services/auth_service.dart';
 import 'package:chat_app/services/chat_service.dart';
 import 'package:chat_app/services/user_service.dart';
 import 'package:chat_app/widgets/message_tile.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 final _userService = UserService();
