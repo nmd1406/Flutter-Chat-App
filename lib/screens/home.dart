@@ -1,8 +1,14 @@
+import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+
 import 'package:chat_app/screens/find_friends.dart';
 import 'package:chat_app/screens/messages.dart';
-import 'package:chat_app/screens/setting.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
+import 'package:chat_app/screens/settings/setting.dart';
+import 'package:chat_app/services/auth_service.dart';
+import 'package:chat_app/services/user_service.dart';
+
+final _authService = AuthService();
+final _userService = UserService();
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -12,7 +18,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  int _currentPageIndex = 1;
+  int _currentPageIndex = 2;
   final List<Widget> _screens = [
     MessagesScreen(),
     FindPeopleScreen(),
@@ -24,6 +30,31 @@ class _HomeScreenState extends State<HomeScreen> {
     "Mọi người",
     "Cài đặt",
   ];
+
+  Widget _buildAvatar() {
+    return StreamBuilder(
+      stream: _userService.getUserData(_authService.getCurrentUserUid()),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return CircleAvatar(
+            child: CircularProgressIndicator(),
+          );
+        }
+
+        if (!snapshot.hasData) {
+          return Center(
+            child: Text("Lỗi load data"),
+          );
+        }
+
+        String imageUrl = snapshot.data!["image_url"];
+
+        return CircleAvatar(
+          backgroundImage: NetworkImage(imageUrl),
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -37,16 +68,11 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
         ),
         actions: [
-          IconButton(
-            onPressed: () async {
-              await FirebaseAuth.instance.signOut();
-            },
-            icon: Icon(
-              Icons.exit_to_app,
-              color: Theme.of(context).colorScheme.primary,
-              size: 30,
+          if (_currentPageIndex != 2)
+            Padding(
+              padding: const EdgeInsets.only(right: 14),
+              child: _buildAvatar(),
             ),
-          ),
         ],
       ),
       body: _screens[_currentPageIndex],
