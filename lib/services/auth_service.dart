@@ -32,11 +32,11 @@ class AuthService {
 
       final storageRef = _storage
           .ref()
-          .child("user_image")
+          .child("user_images")
           .child("${userCredentials.user!.uid}.jpg");
       await storageRef.putFile(image);
       final imageUrl = await storageRef.getDownloadURL();
-
+      _auth.currentUser!.updatePhotoURL(imageUrl);
       await _firestore.collection("users").doc(userCredentials.user!.uid).set({
         "username": username,
         "email": email,
@@ -57,7 +57,25 @@ class AuthService {
     }
   }
 
+  void changePassword(String newPassword) async {
+    var user = _auth.currentUser;
+    try {
+      await user!.updatePassword(newPassword);
+    } on FirebaseAuthException catch (exception) {
+      // TODO
+      print(exception.message);
+    }
+  }
+
   String getCurrentUserUid() {
     return _auth.currentUser!.uid;
+  }
+
+  User getCurrentUser() {
+    return _auth.currentUser!;
+  }
+
+  void signOut() async {
+    await _auth.signOut();
   }
 }
