@@ -61,9 +61,26 @@ class AuthService {
     var user = _auth.currentUser;
     try {
       await user!.updatePassword(newPassword);
+      signOut();
     } on FirebaseAuthException catch (exception) {
       // TODO
       print(exception.message);
+    }
+  }
+
+  Future<bool> validatePassword(String password) async {
+    var user = _auth.currentUser;
+    var userCredential = EmailAuthProvider.credential(
+      email: user!.email!,
+      password: password,
+    );
+    try {
+      var authResult = await user.reauthenticateWithCredential(userCredential);
+      return authResult.user != null;
+    } on FirebaseAuthException catch (exception) {
+      // handle exceptions...
+      print(exception.message);
+      return false;
     }
   }
 
