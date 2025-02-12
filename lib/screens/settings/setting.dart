@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 
 import 'package:chat_app/services/auth_service.dart';
 import 'package:chat_app/services/user_service.dart';
-import 'package:chat_app/widgets/setting_tile.dart';
+import 'package:chat_app/widgets/settings/setting_tile.dart';
 
 final _authService = AuthService();
 final _userService = UserService();
