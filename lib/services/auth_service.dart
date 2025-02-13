@@ -1,29 +1,61 @@
 import 'dart:io';
 
+import 'package:flutter/services.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:path_provider/path_provider.dart';
 
 class AuthService {
   static final _auth = FirebaseAuth.instance;
   static final _firestore = FirebaseFirestore.instance;
   static final _storage = FirebaseStorage.instance;
 
-  Future<UserCredential> signIn(String email, String password) async {
-    try {
-      final userCredentials = await _auth.signInWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
-
-      return userCredentials;
-    } on FirebaseAuthException catch (exception) {
-      throw Exception(exception.message);
+  String _handleAuthException(FirebaseAuthException e) {
+    switch (e.code) {
+      case "user-not-found":
+        return "No user found with this email.";
+      case "wrong-password":
+        return "Incorrect password. Please try again.";
+      case "invalid-email":
+        return "Invalid email format.";
+      case "user-disabled":
+        return "This user account has been disabled.";
+      case "too-many-requests":
+        return "Too many attempts. Please try again later.";
+      case "network-request-failed":
+        return "Lỗi kết nối mạng. Vui lòng thử lại sau,";
+      default:
+        return "Authentication failed. Please try again.";
     }
   }
 
-  Future<UserCredential> signUp(
-      String email, String password, String username, File image) async {
+  Future<File> _getImageFileFromAssets(String path) async {
+    final byteData = await rootBundle.load('assets/$path');
+
+    final file = File('${(await getTemporaryDirectory()).path}/$path');
+    await file.create(recursive: true);
+    await file.writeAsBytes(byteData.buffer
+        .asUint8List(byteData.offsetInBytes, byteData.lengthInBytes));
+
+    return file;
+  }
+
+  Future<String?> signIn(String email, String password) async {
+    try {
+      await _auth.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+    } on FirebaseAuthException catch (exception) {
+      print(exception.message);
+      return _handleAuthException(exception);
+    }
+    return null;
+  }
+
+  Future<String?> signUp(
+      String email, String password, String username, File? image) async {
     try {
       final userCredentials = await _auth.createUserWithEmailAndPassword(
         email: email,
@@ -34,7 +66,15 @@ class AuthService {
           .ref()
           .child("user_images")
           .child("${userCredentials.user!.uid}.jpg");
-      await storageRef.putFile(image);
+
+      if (image == null) {
+        File defaultImage = await _getImageFileFromAssets(
+            "images/default-avatar-profile-icon-of-social-media-user-vector.jpg");
+        await storageRef.putFile(defaultImage);
+      } else {
+        await storageRef.putFile(image);
+      }
+
       final imageUrl = await storageRef.getDownloadURL();
       _auth.currentUser!.updatePhotoURL(imageUrl);
       await _firestore.collection("users").doc(userCredentials.user!.uid).set({
@@ -42,11 +82,10 @@ class AuthService {
         "email": email,
         "image_url": imageUrl,
       });
-
-      return userCredentials;
     } on FirebaseAuthException catch (exception) {
-      throw Exception(exception.message);
+      return _handleAuthException(exception);
     }
+    return null;
   }
 
   Future<void> resetPassword(String email) async {
@@ -57,11 +96,11 @@ class AuthService {
     }
   }
 
-  void changePassword(String newPassword) async {
+  Future<void> changePassword(String newPassword) async {
     var user = _auth.currentUser;
     try {
       await user!.updatePassword(newPassword);
-      signOut();
+      await _auth.signOut();
     } on FirebaseAuthException catch (exception) {
       // TODO
       print(exception.message);

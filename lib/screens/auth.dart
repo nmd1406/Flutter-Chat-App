@@ -4,7 +4,6 @@ import 'package:chat_app/screens/forget_password.dart';
 import 'package:chat_app/services/auth_service.dart';
 import 'package:chat_app/widgets/user_image_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
 final _auth = AuthService();
 
@@ -34,34 +33,31 @@ class _AuthScreenState extends State<AuthScreen> {
 
     _formKey.currentState!.save();
 
-    try {
+    String? errorMessage = "";
+    setState(() {
+      _isAuthenticating = true;
+    });
+    if (_isLogin) {
+      errorMessage = await _auth.signIn(_enteredEmail, _enteredPassword);
+    } else {
+      errorMessage = await _auth.signUp(
+        _enteredEmail,
+        _enteredPassword,
+        _enteredUsername,
+        _selectedImage!,
+      );
+    }
+
+    if (mounted) {
+      ScaffoldMessenger.of(context).clearSnackBars();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(errorMessage ?? "Xác thực thất bại."),
+        ),
+      );
       setState(() {
-        _isAuthenticating = true;
+        _isAuthenticating = false;
       });
-      if (_isLogin) {
-        await _auth.signIn(_enteredEmail, _enteredPassword);
-      } else {
-        await _auth.signUp(
-            _enteredEmail, _enteredPassword, _enteredUsername, _selectedImage!);
-      }
-    } on FirebaseAuthException catch (exception) {
-      if (exception.code == "email-already-in-use") {
-        // handle exception
-      }
-
-      // handle some exceptions...
-
-      if (mounted) {
-        ScaffoldMessenger.of(context).clearSnackBars();
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(exception.message ?? "Xác thực thất bại."),
-          ),
-        );
-        setState(() {
-          _isAuthenticating = false;
-        });
-      }
 
       return;
     }
