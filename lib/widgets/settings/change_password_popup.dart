@@ -57,13 +57,17 @@ class _ChangePasswordPopupState extends State<ChangePasswordPopup> {
   }
 
   void _submit() async {
-    try {
-      await _authService.validatePassword(_currentPasswordController.text);
-    } on Exception catch (e) {
-      // TODO
-      setState(() {
-        _checkCurrentPassword = false;
-      });
+    setState(() {
+      _checkCurrentPassword = true;
+    });
+
+    _checkCurrentPassword =
+        await _authService.validatePassword(_currentPasswordController.text);
+
+    setState(() {});
+
+    if (!_checkCurrentPassword) {
+      return;
     }
 
     bool isValid = _formKey.currentState!.validate();
@@ -71,10 +75,32 @@ class _ChangePasswordPopupState extends State<ChangePasswordPopup> {
       return;
     }
 
-    _authService.changePassword(_newPasswordController.text);
+    await _authService.changePassword(_newPasswordController.text);
 
     if (mounted) {
-      Navigator.of(context).pop();
+      Navigator.pushReplacementNamed(context, "/auth");
+      showDialog(
+        context: context,
+        builder: (context) => SimpleDialog(
+          contentPadding: EdgeInsets.symmetric(horizontal: 12),
+          title: Text("Thông báo"),
+          children: [
+            Text("Thay đổi mật khẩu thành công. Vui lòng đăng nhập lại."),
+            const SizedBox(height: 10),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: Text("Đóng"),
+                ),
+              ],
+            ),
+          ],
+        ),
+      );
     }
 
     return;
