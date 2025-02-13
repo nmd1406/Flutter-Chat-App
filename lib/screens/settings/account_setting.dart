@@ -1,4 +1,5 @@
 import 'package:chat_app/services/auth_service.dart';
+import 'package:chat_app/widgets/settings/change_avatar.dart';
 import 'package:chat_app/widgets/settings/change_password_popup.dart';
 import 'package:flutter/material.dart';
 
@@ -13,6 +14,13 @@ class AccountSetting extends StatelessWidget {
     showDialog(
       context: context,
       builder: (context) => ChangePasswordPopup(),
+    );
+  }
+
+  void _buildChangeAvatar(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) => ChangeAvatar(),
     );
   }
 
@@ -35,6 +43,13 @@ class AccountSetting extends StatelessWidget {
             icon: null,
             onTap: () {
               _changePasswordPopUp(context);
+            },
+          ),
+          SettingTile(
+            title: "Thay đổi ảnh đại diện",
+            icon: null,
+            onTap: () {
+              _buildChangeAvatar(context);
             },
           ),
         ],
