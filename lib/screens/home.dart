@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
 import 'package:chat_app/screens/find_friends.dart';
 import 'package:chat_app/screens/messages.dart';
