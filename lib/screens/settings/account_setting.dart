@@ -39,17 +39,22 @@ class AccountSetting extends StatelessWidget {
       body: Column(
         children: [
           SettingTile(
-            title: "Thay đổi mật khẩu",
+            title: "Thay đổi tên người dùng",
             icon: null,
-            onTap: () {
-              _changePasswordPopUp(context);
-            },
+            onTap: () {},
           ),
           SettingTile(
             title: "Thay đổi ảnh đại diện",
             icon: null,
             onTap: () {
               _buildChangeAvatar(context);
+            },
+          ),
+          SettingTile(
+            title: "Thay đổi mật khẩu",
+            icon: null,
+            onTap: () {
+              _changePasswordPopUp(context);
             },
           ),
         ],
