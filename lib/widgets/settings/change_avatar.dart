@@ -1,14 +1,15 @@
 import 'dart:io';
-import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 
+import 'package:chat_app/services/storage_service.dart';
 import 'package:chat_app/services/auth_service.dart';
 import 'package:chat_app/services/user_service.dart';
-import 'package:image_picker/image_picker.dart';
 
 final _authService = AuthService();
 final _userService = UserService();
+final _storageService = StorageService();
 
 class ChangeAvatar extends StatefulWidget {
   const ChangeAvatar({super.key});
@@ -83,16 +84,42 @@ class _ChangeAvatarState extends State<ChangeAvatar> {
     );
   }
 
+  void _submit() async {
+    if (_pickedImage == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Không có ảnh nào được chọn."),
+        ),
+      );
+      return;
+    }
+
+    await _storageService.updateAvatar(_pickedImage!);
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Cập nhật ảnh đại diện thành công."),
+        ),
+      );
+      Navigator.of(context).pop();
+    }
+
+    return;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 240,
+      height: 290,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),
       ),
       child: Column(
         children: [
-          _buildAvatar(),
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 14),
+            child: _buildAvatar(),
+          ),
           ListTile(
             title: Text("Chọn ảnh từ thư viện"),
             leading: Icon(Icons.image_outlined),
@@ -103,13 +130,20 @@ class _ChangeAvatarState extends State<ChangeAvatar> {
             leading: Icon(Icons.camera_alt_sharp),
             onTap: _takePicture,
           ),
-          ElevatedButton(
-            onPressed: () {},
-            child: Text("Thay đổi"),
-          ),
-          TextButton(
-            onPressed: () {},
-            child: Text("Huỷ"),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ElevatedButton(
+                onPressed: _submit,
+                child: Text("Thay đổi"),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text("Huỷ"),
+              ),
+            ],
           ),
         ],
       ),
