@@ -17,6 +17,7 @@ class AuthScreen extends StatefulWidget {
 class _AuthScreenState extends State<AuthScreen> {
   final _formKey = GlobalKey<FormState>();
 
+  bool _passwordVisible = false;
   bool _isLogin = true;
   bool _isAuthenticating = false;
   String _enteredEmail = "";
@@ -200,6 +201,16 @@ class _AuthScreenState extends State<AuthScreen> {
                             decoration: InputDecoration(
                               labelText: "Mật khẩu",
                               prefixIcon: Icon(Icons.key),
+                              suffixIcon: IconButton(
+                                onPressed: () {
+                                  setState(() {
+                                    _passwordVisible = !_passwordVisible;
+                                  });
+                                },
+                                icon: _passwordVisible
+                                    ? Icon(Icons.visibility)
+                                    : Icon(Icons.visibility_off),
+                              ),
                               enabledBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(18),
                                 borderSide: BorderSide(width: 1.3),
@@ -226,7 +237,7 @@ class _AuthScreenState extends State<AuthScreen> {
                                 ),
                               ),
                             ),
-                            obscureText: true,
+                            obscureText: _passwordVisible,
                             validator: (value) {
                               if (value == null || value.trim().length < 6) {
                                 return "Mật khẩu phải chứa ít nhất 6 ký tự.";

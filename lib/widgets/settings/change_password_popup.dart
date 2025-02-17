@@ -16,6 +16,7 @@ class _ChangePasswordPopupState extends State<ChangePasswordPopup> {
   final _newPasswordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
   bool _checkCurrentPassword = true;
+  bool _passwordVisible = false;
 
   @override
   void dispose() {
@@ -131,6 +132,16 @@ class _ChangePasswordPopupState extends State<ChangePasswordPopup> {
                   autocorrect: false,
                   decoration: InputDecoration(
                     labelText: "Mật khẩu hiện tại",
+                    suffixIcon: IconButton(
+                      onPressed: () {
+                        setState(() {
+                          _passwordVisible = !_passwordVisible;
+                        });
+                      },
+                      icon: _passwordVisible
+                          ? Icon(Icons.visibility)
+                          : Icon(Icons.visibility_off),
+                    ),
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(18),
                       borderSide: BorderSide(width: 1.3),
