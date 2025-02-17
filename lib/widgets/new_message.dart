@@ -1,5 +1,6 @@
 import 'package:chat_app/services/chat_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -26,6 +27,14 @@ class _NewMessageState extends State<NewMessage> {
   void dispose() {
     _messageController.dispose();
     super.dispose();
+  }
+
+  void _pickFiles() async {
+    final pickedFiles =
+        await FilePicker.platform.pickFiles(allowMultiple: true);
+    if (pickedFiles == null) {
+      return;
+    }
   }
 
   void _submitMessage() async {
@@ -61,8 +70,9 @@ class _NewMessageState extends State<NewMessage> {
               autocorrect: false,
               decoration: InputDecoration(
                 labelText: "Nhập tin nhắn...",
+                prefixIcon: Icon(Icons.message),
                 suffixIcon: IconButton(
-                  onPressed: () {},
+                  onPressed: _pickFiles,
                   icon: Icon(Icons.file_copy),
                 ),
                 border: OutlineInputBorder(
@@ -86,7 +96,7 @@ class _NewMessageState extends State<NewMessage> {
               color: Theme.of(context).primaryColor,
               size: 35,
             ),
-          )
+          ),
         ],
       ),
     );
