@@ -1,6 +1,7 @@
 import 'package:chat_app/services/auth_service.dart';
 import 'package:chat_app/widgets/settings/change_avatar.dart';
 import 'package:chat_app/widgets/settings/change_password_popup.dart';
+import 'package:chat_app/widgets/settings/change_username_popup.dart';
 import 'package:flutter/material.dart';
 
 import 'package:chat_app/widgets/settings/setting_tile.dart';
@@ -24,6 +25,13 @@ class AccountSetting extends StatelessWidget {
     );
   }
 
+  void _buildChangeUsername(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => ChangeUsernamePopup(),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -41,7 +49,9 @@ class AccountSetting extends StatelessWidget {
           SettingTile(
             title: "Thay đổi tên người dùng",
             icon: null,
-            onTap: () {},
+            onTap: () {
+              _buildChangeUsername(context);
+            },
           ),
           SettingTile(
             title: "Thay đổi ảnh đại diện",
