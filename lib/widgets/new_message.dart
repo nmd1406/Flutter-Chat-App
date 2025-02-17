@@ -61,6 +61,10 @@ class _NewMessageState extends State<NewMessage> {
               autocorrect: false,
               decoration: InputDecoration(
                 labelText: "Nhập tin nhắn...",
+                suffixIcon: IconButton(
+                  onPressed: () {},
+                  icon: Icon(Icons.file_copy),
+                ),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(18),
                   borderSide: BorderSide(width: 1.3),
