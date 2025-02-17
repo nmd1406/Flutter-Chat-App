@@ -16,7 +16,9 @@ class _ChangePasswordPopupState extends State<ChangePasswordPopup> {
   final _newPasswordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
   bool _checkCurrentPassword = true;
-  bool _passwordVisible = false;
+  bool _currentPasswordObscure = true;
+  bool _newPasswordObscure = true;
+  bool _confirmPasswordObscure = true;
 
   @override
   void dispose() {
@@ -24,37 +26,6 @@ class _ChangePasswordPopupState extends State<ChangePasswordPopup> {
     _newPasswordController.dispose();
     _confirmPasswordController.dispose();
     super.dispose();
-  }
-
-  InputDecoration _textFormFieldDecoration(String title) {
-    return InputDecoration(
-      labelText: title,
-      enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(18),
-        borderSide: BorderSide(width: 1.3),
-      ),
-      focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(18),
-        borderSide: BorderSide(
-          width: 1.3,
-          color: Theme.of(context).primaryColor,
-        ),
-      ),
-      focusedErrorBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(18),
-        borderSide: BorderSide(
-          width: 1.3,
-          color: Theme.of(context).colorScheme.error,
-        ),
-      ),
-      errorBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(18),
-        borderSide: BorderSide(
-          width: 1.3,
-          color: Theme.of(context).colorScheme.error,
-        ),
-      ),
-    );
   }
 
   void _submit() async {
@@ -128,17 +99,17 @@ class _ChangePasswordPopupState extends State<ChangePasswordPopup> {
               children: [
                 TextFormField(
                   controller: _currentPasswordController,
-                  obscureText: true,
+                  obscureText: _currentPasswordObscure,
                   autocorrect: false,
                   decoration: InputDecoration(
                     labelText: "Mật khẩu hiện tại",
                     suffixIcon: IconButton(
                       onPressed: () {
                         setState(() {
-                          _passwordVisible = !_passwordVisible;
+                          _currentPasswordObscure = !_currentPasswordObscure;
                         });
                       },
-                      icon: _passwordVisible
+                      icon: _currentPasswordObscure
                           ? Icon(Icons.visibility)
                           : Icon(Icons.visibility_off),
                     ),
@@ -175,7 +146,7 @@ class _ChangePasswordPopupState extends State<ChangePasswordPopup> {
                 const SizedBox(height: 12),
                 TextFormField(
                   controller: _newPasswordController,
-                  obscureText: true,
+                  obscureText: _newPasswordObscure,
                   autocorrect: false,
                   validator: (value) {
                     if (value == null || value.trim().length < 6) {
@@ -183,12 +154,49 @@ class _ChangePasswordPopupState extends State<ChangePasswordPopup> {
                     }
                     return null;
                   },
-                  decoration: _textFormFieldDecoration("Mật khẩu mới"),
+                  decoration: InputDecoration(
+                    labelText: "Mật khẩu mới",
+                    suffixIcon: IconButton(
+                      onPressed: () {
+                        setState(() {
+                          _newPasswordObscure = !_newPasswordObscure;
+                        });
+                      },
+                      icon: _newPasswordObscure
+                          ? Icon(Icons.visibility)
+                          : Icon(Icons.visibility_off),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(18),
+                      borderSide: BorderSide(width: 1.3),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(18),
+                      borderSide: BorderSide(
+                        width: 1.3,
+                        color: Theme.of(context).primaryColor,
+                      ),
+                    ),
+                    focusedErrorBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(18),
+                      borderSide: BorderSide(
+                        width: 1.3,
+                        color: Theme.of(context).colorScheme.error,
+                      ),
+                    ),
+                    errorBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(18),
+                      borderSide: BorderSide(
+                        width: 1.3,
+                        color: Theme.of(context).colorScheme.error,
+                      ),
+                    ),
+                  ),
                 ),
                 const SizedBox(height: 12),
                 TextFormField(
                   controller: _confirmPasswordController,
-                  obscureText: true,
+                  obscureText: _confirmPasswordObscure,
                   autocorrect: false,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -199,7 +207,44 @@ class _ChangePasswordPopupState extends State<ChangePasswordPopup> {
                     }
                     return null;
                   },
-                  decoration: _textFormFieldDecoration("Xác nhận mật khẩu"),
+                  decoration: InputDecoration(
+                    labelText: "Xác nhận mật khẩu",
+                    suffixIcon: IconButton(
+                      onPressed: () {
+                        setState(() {
+                          _confirmPasswordObscure = !_confirmPasswordObscure;
+                        });
+                      },
+                      icon: _confirmPasswordObscure
+                          ? Icon(Icons.visibility)
+                          : Icon(Icons.visibility_off),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(18),
+                      borderSide: BorderSide(width: 1.3),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(18),
+                      borderSide: BorderSide(
+                        width: 1.3,
+                        color: Theme.of(context).primaryColor,
+                      ),
+                    ),
+                    focusedErrorBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(18),
+                      borderSide: BorderSide(
+                        width: 1.3,
+                        color: Theme.of(context).colorScheme.error,
+                      ),
+                    ),
+                    errorBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(18),
+                      borderSide: BorderSide(
+                        width: 1.3,
+                        color: Theme.of(context).colorScheme.error,
+                      ),
+                    ),
+                  ),
                 ),
                 const SizedBox(
                   height: 24,

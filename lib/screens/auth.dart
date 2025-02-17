@@ -17,7 +17,7 @@ class AuthScreen extends StatefulWidget {
 class _AuthScreenState extends State<AuthScreen> {
   final _formKey = GlobalKey<FormState>();
 
-  bool _passwordVisible = false;
+  bool _passwordObscure = true;
   bool _isLogin = true;
   bool _isAuthenticating = false;
   String _enteredEmail = "";
@@ -204,10 +204,10 @@ class _AuthScreenState extends State<AuthScreen> {
                               suffixIcon: IconButton(
                                 onPressed: () {
                                   setState(() {
-                                    _passwordVisible = !_passwordVisible;
+                                    _passwordObscure = !_passwordObscure;
                                   });
                                 },
-                                icon: _passwordVisible
+                                icon: _passwordObscure
                                     ? Icon(Icons.visibility)
                                     : Icon(Icons.visibility_off),
                               ),
@@ -237,7 +237,7 @@ class _AuthScreenState extends State<AuthScreen> {
                                 ),
                               ),
                             ),
-                            obscureText: _passwordVisible,
+                            obscureText: _passwordObscure,
                             validator: (value) {
                               if (value == null || value.trim().length < 6) {
                                 return "Mật khẩu phải chứa ít nhất 6 ký tự.";
