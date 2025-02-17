@@ -56,7 +56,7 @@ class _FindPeopleScreenState extends State<FindPeopleScreen> {
                   });
                 },
                 icon: Icon(Icons.close_rounded),
-              )
+              ),
             ],
           ),
         ),

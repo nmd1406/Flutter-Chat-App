@@ -43,68 +43,74 @@ class _ChangeUsernamePopupState extends State<ChangeUsernamePopup> {
         "Thay đổi tên người dùng",
         style: TextStyle(
           fontWeight: FontWeight.bold,
-          fontSize: 27,
+          fontSize: 25,
         ),
       ),
       children: [
-        Form(
-          key: _formKey,
-          child: TextFormField(
-            decoration: InputDecoration(
-              labelText: "Tên người dùng",
-              prefixIcon: Icon(Icons.person),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(18),
-                borderSide: BorderSide(width: 1.3),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(18),
-                borderSide: BorderSide(
-                  width: 1.3,
-                  color: Theme.of(context).primaryColor,
+        Padding(
+          padding: const EdgeInsets.all(12.0),
+          child: Form(
+            key: _formKey,
+            child: TextFormField(
+              decoration: InputDecoration(
+                labelText: "Tên người dùng",
+                prefixIcon: Icon(Icons.person),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(18),
+                  borderSide: BorderSide(width: 1.3),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(18),
+                  borderSide: BorderSide(
+                    width: 1.3,
+                    color: Theme.of(context).primaryColor,
+                  ),
+                ),
+                focusedErrorBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(18),
+                  borderSide: BorderSide(
+                    width: 1.3,
+                    color: Theme.of(context).colorScheme.error,
+                  ),
+                ),
+                errorBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(18),
+                  borderSide: BorderSide(
+                    width: 1.3,
+                    color: Theme.of(context).colorScheme.error,
+                  ),
                 ),
               ),
-              focusedErrorBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(18),
-                borderSide: BorderSide(
-                  width: 1.3,
-                  color: Theme.of(context).colorScheme.error,
-                ),
-              ),
-              errorBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(18),
-                borderSide: BorderSide(
-                  width: 1.3,
-                  color: Theme.of(context).colorScheme.error,
-                ),
-              ),
+              validator: (value) {
+                if (value == null || value.isEmpty || value.trim().length < 4) {
+                  return "Tên người dùng phải có ít nhất 4 ký tự.";
+                }
+                return null;
+              },
+              onSaved: (newValue) {
+                _enteredUsername = newValue!;
+              },
             ),
-            validator: (value) {
-              if (value == null || value.isEmpty || value.trim().length < 4) {
-                return "Tên người dùng phải có ít nhất 4 ký tự.";
-              }
-              return null;
-            },
-            onSaved: (newValue) {
-              _enteredUsername = newValue!;
-            },
           ),
         ),
         const SizedBox(height: 20),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            ElevatedButton(
-              onPressed: _submit,
-              child: Text("Thay đổi"),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: Text("Huỷ"),
-            ),
-          ],
+        Padding(
+          padding: const EdgeInsets.only(right: 12),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              ElevatedButton(
+                onPressed: _submit,
+                child: Text("Thay đổi"),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text("Huỷ"),
+              ),
+            ],
+          ),
         )
       ],
     );

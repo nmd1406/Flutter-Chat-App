@@ -25,18 +25,7 @@ class MessageTile extends StatelessWidget {
         stream: _chatService.getMessages(userId, otherUserId),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Padding(
-              padding: const EdgeInsets.all(10.0),
-              child: ListTile(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(24),
-                ),
-                tileColor: Theme.of(context).colorScheme.inversePrimary,
-                title: Center(
-                  child: CircularProgressIndicator(),
-                ),
-              ),
-            );
+            return SizedBox.shrink();
           }
 
           if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
