@@ -6,18 +6,17 @@ final _authService = AuthService();
 class ChatService {
   static final _firestore = FirebaseFirestore.instance;
 
-  Future<void> sendMessage(String senderUsername, String senderImageUrl,
-      String receiverId, String message) async {
+  Future<void> sendMessage(
+      String receiverId, String message, String messageType) async {
     final String currentUserId = _authService.getCurrentUserUid();
     final Timestamp timestamp = Timestamp.now();
 
     Map<String, dynamic> messageData = {
-      "userImage": senderImageUrl,
-      "username": senderUsername,
       "senderId": currentUserId,
       "receiverId": receiverId,
       "timeStamp": timestamp,
       "message": message,
+      "messageType": messageType,
     };
 
     List<String> ids = [currentUserId, receiverId];
