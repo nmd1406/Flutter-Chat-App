@@ -1,11 +1,13 @@
 import 'package:chat_app/services/auth_service.dart';
 import 'package:chat_app/services/chat_service.dart';
+import 'package:chat_app/services/user_service.dart';
 import 'package:chat_app/widgets/message_bubble.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 final _chatService = ChatService();
 final _authService = AuthService();
+final _userService = UserService();
 
 class ChatMessages extends StatelessWidget {
   final Map<String, dynamic> otherUserData;
@@ -64,17 +66,31 @@ class ChatMessages extends StatelessWidget {
             final nextUserIsSame = nextMessageUserId == currentMessageUserId;
 
             if (nextUserIsSame) {
-              return MessageBubble.next(
-                message: chatMessage["message"],
-                isMe: authenticatedUser.uid == currentMessageUserId,
-              );
+              return StreamBuilder<Object>(
+                  stream: null,
+                  builder: (context, snapshot) {
+                    return MessageBubble.next(
+                      message: chatMessage["message"],
+                      messageType: chatMessage["messageType"],
+                      isMe: authenticatedUser.uid == currentMessageUserId,
+                    );
+                  });
             } else {
-              return MessageBubble.first(
-                userImage: chatMessage["userImage"],
-                username: chatMessage["username"],
-                message: chatMessage["message"],
-                isMe: authenticatedUser.uid == currentMessageUserId,
-              );
+              return StreamBuilder(
+                  stream: _userService.getUserData(currentMessageUserId),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return SizedBox.shrink();
+                    }
+
+                    return MessageBubble.first(
+                      userImage: snapshot.data!["image_url"],
+                      username: snapshot.data!["username"],
+                      message: chatMessage["message"],
+                      messageType: chatMessage["messageType"],
+                      isMe: authenticatedUser.uid == currentMessageUserId,
+                    );
+                  });
             }
           },
         );
