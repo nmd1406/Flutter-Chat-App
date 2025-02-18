@@ -1,10 +1,12 @@
+import 'dart:io';
+
 import 'package:chat_app/services/chat_service.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:chat_app/services/storage_service.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 final _chatService = ChatService();
+final _storageService = StorageService();
 
 class NewMessage extends StatefulWidget {
   final Map<String, dynamic> otherUserData;
@@ -35,6 +37,15 @@ class _NewMessageState extends State<NewMessage> {
     if (pickedFiles == null) {
       return;
     }
+
+    try {
+      for (var file in pickedFiles.files) {
+        String fileUrl = await _storageService.uploadFiles(File(file.path!));
+        await _chatService.sendMessage(widget.otherUserId, fileUrl, "files");
+      }
+    } catch (e) {
+      print(e);
+    }
   }
 
   void _submitMessage() async {
@@ -47,14 +58,7 @@ class _NewMessageState extends State<NewMessage> {
     FocusScope.of(context).unfocus();
     _messageController.clear();
 
-    final user = FirebaseAuth.instance.currentUser!;
-    final userData = await FirebaseFirestore.instance
-        .collection("users")
-        .doc(user.uid)
-        .get();
-
-    _chatService.sendMessage(userData["username"], userData["image_url"],
-        widget.otherUserId, enteredMessage);
+    _chatService.sendMessage(widget.otherUserId, enteredMessage, "text");
   }
 
   @override
