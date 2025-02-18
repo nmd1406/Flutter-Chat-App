@@ -1,6 +1,7 @@
+import 'package:flutter/material.dart';
+
 import 'package:chat_app/widgets/chat_messages.dart';
 import 'package:chat_app/widgets/new_message.dart';
-import 'package:flutter/material.dart';
 
 class ChatScreen extends StatelessWidget {
   final Map<String, dynamic> otherUserData;
@@ -16,25 +17,23 @@ class ChatScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          otherUserData["username"],
-          style: TextStyle(
-            color: Theme.of(context).colorScheme.primary,
-          ),
+        title: Row(
+          children: [
+            CircleAvatar(
+              foregroundImage: NetworkImage(otherUserData["image_url"]),
+              radius: 23,
+            ),
+            const SizedBox(width: 10),
+            Text(
+              otherUserData["username"],
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.primary,
+              ),
+            ),
+          ],
         ),
-        centerTitle: true,
         elevation: 20,
         backgroundColor: Theme.of(context).colorScheme.primaryContainer,
-        actions: [
-          IconButton(
-            onPressed: () async {},
-            icon: Icon(
-              Icons.info_outline_rounded,
-              color: Theme.of(context).colorScheme.primary,
-              size: 30,
-            ),
-          )
-        ],
       ),
       body: Column(
         children: [
