@@ -1,20 +1,32 @@
+import 'package:chat_app/services/file_service.dart';
 import 'package:flutter/material.dart';
 
-class FileMessageBubble extends StatelessWidget {
-  String? userImage;
+final _fileService = FileService();
 
-  FileMessageBubble({
+class FileMessageBubble extends StatelessWidget {
+  final String fileUrl;
+
+  const FileMessageBubble({
     super.key,
-    this.userImage,
+    required this.fileUrl,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      child: Container(
-        height: 180,
-        width: 220,
-        child: Image.network(userImage!),
+    final fileInfo = _fileService.getFileInfoFromUrl(fileUrl);
+
+    return GestureDetector(
+      onTap: () async {
+        await _fileService.openFile(fileUrl, fileInfo["fileName"]!);
+      },
+      child: Card(
+        child: Container(
+          height: 180,
+          width: 220,
+          child: Image.network(
+            fileUrl,
+          ),
+        ),
       ),
     );
   }
