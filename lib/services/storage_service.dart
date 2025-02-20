@@ -4,6 +4,7 @@ import 'package:path/path.dart' as path;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:chat_app/services/auth_service.dart';
+import 'package:uuid/uuid.dart';
 
 final _authService = AuthService();
 
@@ -34,7 +35,8 @@ class StorageService {
     String filePath = file.path;
     String fileName = path.basename(filePath);
 
-    var storageRef = _storage.ref().child("media_files").child(fileName);
+    var storageRef =
+        _storage.ref().child("media_files").child("${Uuid().v4()}_$fileName");
     await storageRef.putFile(file);
 
     return await storageRef.getDownloadURL();
