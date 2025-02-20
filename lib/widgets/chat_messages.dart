@@ -99,7 +99,6 @@ class _ChatMessagesState extends State<ChatMessages> {
           children: [
             ListView.builder(
               itemCount: loadedMessages.length,
-              controller: _scrollController,
               padding: EdgeInsets.only(
                 bottom: 40,
                 left: 13,

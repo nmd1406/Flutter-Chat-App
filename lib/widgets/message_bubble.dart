@@ -142,7 +142,7 @@ class MessageBubble extends StatelessWidget {
                         ))
                   else
                     FileMessageBubble(
-                      userImage: message,
+                      fileUrl: message,
                     ),
                 ],
               ),
