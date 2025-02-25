@@ -25,6 +25,7 @@ class StorageService {
     await storageRef.putFile(newAvatar);
 
     String imageUrl = await storageRef.getDownloadURL();
+
     await _firestore
         .collection("users")
         .doc(uid)
