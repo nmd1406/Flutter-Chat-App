@@ -2,55 +2,50 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:crypto/crypto.dart';
+import 'package:dio/dio.dart';
 import 'package:open_file/open_file.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:http/http.dart' as http;
+import 'package:path_provider/path_provider.dart' as path;
+import 'package:permission_handler/permission_handler.dart';
 
 class FileService {
-  static final _fileCache = FileCache();
-
-  Future<void> openFile(String fileUrl, String fileName) async {
-    try {
-      final cacheFilePath =
-          await _fileCache.getCacheFilePath(fileName, fileUrl);
-      File cacheFile = File(cacheFilePath);
-
-      if (!await cacheFile.exists()) {
-        final response = await http.head(Uri.parse(fileUrl));
-        final fileSize = int.parse(response.headers['content-length'] ?? '0');
-
-        if (!await _fileCache.canCacheFile(fileSize)) {
-          final tempDir = await getTemporaryDirectory();
-          final tempFile = File("${tempDir.path}/$fileName");
-
-          final response = await http.get(Uri.parse(fileUrl));
-          await tempFile.writeAsBytes(response.bodyBytes);
-
-          await OpenFile.open(tempFile.path);
-          return;
-        }
-
-        final res = await http.get(Uri.parse(fileUrl));
-        await cacheFile.writeAsBytes(res.bodyBytes);
-        await _fileCache.manageCacheSize();
-      }
-
-      await cacheFile.setLastAccessed(DateTime.now());
-      await OpenFile.open(cacheFile.path);
-    } catch (e) {
-      print("Error open file: $e");
-    }
+  Future<bool> requestPermissions() async {
+    return await Permission.manageExternalStorage.request().isGranted;
   }
 
-  Future<void> clearCache() async {
+  Future<void> openFile(String fileUrl, String fileName) async {
+    // Then in your openFile method:
+    if (!await requestPermissions()) {
+      print("Storage permission denied");
+      return;
+    }
+
     try {
-      final cacheDir = Directory(await _fileCache.getCacheDirectory());
-      if (await cacheDir.exists()) {
-        await cacheDir.delete(recursive: true);
+      // Get storage directory
+      Directory directory = await path.getApplicationDocumentsDirectory();
+      String filePath = '${directory.path}/media_files/$fileName';
+      File file = File(filePath);
+
+      // Check if file already exists
+      if (await file.exists()) {
+        print("File already exists, opening...");
+        OpenFile.open(filePath);
+        return;
       }
+
+      // Download the file if it doesn't exist
+      print("Downloading file...");
+      Dio dio = Dio();
+      await dio.download(fileUrl, filePath,
+          onReceiveProgress: (received, total) {
+        if (total != -1) {
+          print("Downloading: ${(received / total * 100).toStringAsFixed(0)}%");
+        }
+      });
+
+      print("File downloaded to: $filePath");
+      OpenFile.open(filePath);
     } catch (e) {
-      print('Error clearing cache: $e');
-      rethrow;
+      print("Error: $e");
     }
   }
 
@@ -83,105 +78,6 @@ class FileService {
         'fileName': 'unknown',
         'fileType': '',
       };
-    }
-  }
-}
-
-class FileCache {
-  static const int _maxCacheSize = 500 * 1024 * 1024;
-  static const int _warningThreshold = 480 * 1024 * 1024;
-
-  Future<String> getCacheDirectory() async {
-    final appDir = await getApplicationDocumentsDirectory();
-    final cacheDir = Directory("${appDir.path}/file_cache");
-
-    if (!await cacheDir.exists()) {
-      await cacheDir.create(recursive: true);
-    }
-
-    return cacheDir.path;
-  }
-
-  Future<String> getCacheFilePath(String fileName, String fileUrl) async {
-    final cacheDir = await getCacheDirectory();
-    final urlHash = md5.convert(utf8.encode(fileUrl)).toString();
-
-    return "$cacheDir/${urlHash}_$fileName";
-  }
-
-  Future<bool> isFileInCache(String fileName, String fileUrl) async {
-    final cachePath = await getCacheFilePath(fileName, fileUrl);
-    final file = File(cachePath);
-
-    return await file.exists();
-  }
-
-  Future<void> manageCacheSize() async {
-    try {
-      final cacheDir = Directory(await getCacheDirectory());
-      final files = await cacheDir.list().toList();
-
-      int totalSize = 0;
-      List<FileMetadata> filesList = [];
-
-      for (var entity in files) {
-        if (entity is File) {
-          final stat = await entity.stat();
-          totalSize += stat.size;
-          filesList.add(FileMetadata(
-            file: entity,
-            size: stat.size,
-            lastAccessed: stat.accessed,
-          ));
-        }
-      }
-
-      if (totalSize > _warningThreshold) {
-        filesList.sort(
-          (a, b) {
-            int timeCompare = a.lastAccessed.compareTo(b.lastAccessed);
-            if (timeCompare != 0) {
-              return timeCompare;
-            }
-            return b.size.compareTo(a.size);
-          },
-        );
-      }
-
-      while (totalSize > _warningThreshold && filesList.isNotEmpty) {
-        final fileToRemove = filesList.removeAt(0);
-
-        try {
-          await fileToRemove.file.delete();
-          totalSize -= fileToRemove.size;
-        } catch (e) {
-          print("Error removing cache file: $e");
-        }
-      }
-    } catch (e) {
-      print("Error managing cache: $e");
-    }
-  }
-
-  Future<bool> canCacheFile(int fileSize) async {
-    try {
-      final cacheDir = Directory(await getCacheDirectory());
-      if (!await cacheDir.exists()) {
-        return true;
-      }
-
-      int currentSize = 0;
-      final files = await cacheDir.list().toList();
-      for (var entity in files) {
-        if (entity is File) {
-          currentSize += await entity.length();
-        }
-      }
-
-      return (currentSize + fileSize) <= _maxCacheSize;
-    } catch (e) {
-      print("Error checking cache capacity: $e");
-      return false;
     }
   }
 }
