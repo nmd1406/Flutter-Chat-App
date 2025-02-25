@@ -1,10 +1,13 @@
 import 'dart:io';
 
 import 'package:chat_app/services/chat_service.dart';
+import 'package:chat_app/services/file_service.dart';
 import 'package:chat_app/services/storage_service.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:permission_handler/permission_handler.dart';
 
+final _fileService = FileService();
 final _chatService = ChatService();
 final _storageService = StorageService();
 
@@ -32,6 +35,12 @@ class _NewMessageState extends State<NewMessage> {
   }
 
   void _pickFiles() async {
+    bool isGranted = await _fileService.requestPermissions();
+    if (!isGranted) {
+      print("permission not granted");
+      return;
+    }
+
     final pickedFiles =
         await FilePicker.platform.pickFiles(allowMultiple: true);
     if (pickedFiles == null) {
