@@ -1,22 +1,22 @@
-import 'dart:convert';
 import 'dart:io';
+import 'dart:math';
 
-import 'package:crypto/crypto.dart';
 import 'package:dio/dio.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart' as path;
 import 'package:permission_handler/permission_handler.dart';
+import 'package:http/http.dart' as http;
 
 class FileService {
   Future<bool> requestPermissions() async {
     return await Permission.manageExternalStorage.request().isGranted;
   }
 
-  Future<void> openFile(String fileUrl, String fileName) async {
+  Future<File?> openFile(String fileUrl, String fileName) async {
     // Then in your openFile method:
     if (!await requestPermissions()) {
       print("Storage permission denied");
-      return;
+      return null;
     }
 
     try {
@@ -29,7 +29,7 @@ class FileService {
       if (await file.exists()) {
         print("File already exists, opening...");
         OpenFile.open(filePath);
-        return;
+        return file;
       }
 
       // Download the file if it doesn't exist
@@ -44,9 +44,16 @@ class FileService {
 
       print("File downloaded to: $filePath");
       OpenFile.open(filePath);
+      return file;
     } catch (e) {
       print("Error: $e");
     }
+  }
+
+  Future<bool> isFileExist(String fileName) async {
+    Directory directory = await path.getApplicationDocumentsDirectory();
+    File file = File('${directory.path}/media_files/$fileName');
+    return await file.exists();
   }
 
   Map<String, String> getFileInfoFromUrl(String downloadUrl) {
@@ -62,34 +69,46 @@ class FileService {
       fileName = Uri.decodeFull(fileName);
 
       // Get file extension
-      String fileType = '';
+      String fileExtension = '';
       int dotIndex = fileName.lastIndexOf('.');
       if (dotIndex != -1) {
-        fileType = fileName.substring(dotIndex);
+        fileExtension = fileName.substring(dotIndex);
       }
 
       return {
         'fileName': fileName,
-        'fileType': fileType,
+        'fileExtension': fileExtension,
       };
     } catch (e) {
       print('Error extracting file info from URL: $e');
       return {
         'fileName': 'unknown',
-        'fileType': '',
+        'fileExtension': '',
       };
     }
   }
-}
 
-class FileMetadata {
-  final File file;
-  final int size;
-  final DateTime lastAccessed;
+  Future<String> getFileSizeFromUrl(String fileUrl) async {
+    http.Response response = await http.head(Uri.parse(fileUrl));
+    int bytes = int.parse(response.headers["content-length"]!);
+    if (bytes <= 0) {
+      return "0 B";
+    }
 
-  FileMetadata({
-    required this.file,
-    required this.size,
-    required this.lastAccessed,
-  });
+    const List<String> suffixes = ["B", "KB", "MB", "GB"];
+    int suffixIndex = (log(bytes) / log(1024)).floor();
+    return '${(bytes / pow(1024, suffixIndex)).toStringAsFixed(2)} ${suffixes[suffixIndex]}';
+  }
+
+  Future<String> getFileSize(File file) async {
+    int bytes = await file.length();
+
+    if (bytes <= 0) {
+      return "0 B";
+    }
+
+    const List<String> suffixes = ["B", "KB", "MB", "GB"];
+    int suffixIndex = (log(bytes) / log(1024)).floor();
+    return '${(bytes / pow(1024, suffixIndex)).toStringAsFixed(2)} ${suffixes[suffixIndex]}';
+  }
 }
