@@ -6,11 +6,15 @@ import 'package:cached_video_player_plus/cached_video_player_plus.dart';
 class VideoMessage extends StatefulWidget {
   final String? fileUrl;
   final File? videoFile;
+  final double height;
+  final double width;
 
   const VideoMessage({
     super.key,
     this.fileUrl,
     this.videoFile,
+    required this.height,
+    required this.width,
   });
 
   @override
@@ -24,16 +28,21 @@ class _VideoMessageState extends State<VideoMessage> {
   void initState() {
     super.initState();
 
-    if (widget.fileUrl != null) {
+    if (widget.videoFile != null) {
+      _videoPlayerController =
+          CachedVideoPlayerPlusController.file(widget.videoFile!);
+    } else if (widget.fileUrl != null) {
       _videoPlayerController = CachedVideoPlayerPlusController.networkUrl(
         Uri.parse(widget.fileUrl!),
       );
-    } else if (widget.videoFile != null) {
-      _videoPlayerController =
-          CachedVideoPlayerPlusController.file(widget.videoFile!);
     }
 
-    _videoPlayerController.initialize();
+    _videoPlayerController.initialize().then(
+      (value) async {
+        _videoPlayerController.play();
+        setState(() {});
+      },
+    );
   }
 
   @override
@@ -45,12 +54,27 @@ class _VideoMessageState extends State<VideoMessage> {
   @override
   Widget build(BuildContext context) {
     return Container(
+      constraints: BoxConstraints(
+        maxWidth: MediaQuery.of(context).size.width * 0.8,
+        maxHeight: 300,
+      ),
+      height: widget.height,
+      width: widget.width,
       child: _videoPlayerController.value.isInitialized
           ? AspectRatio(
               aspectRatio: _videoPlayerController.value.aspectRatio,
-              child: CachedVideoPlayerPlus(_videoPlayerController),
+              child: Stack(
+                alignment: AlignmentDirectional.center,
+                children: [
+                  CachedVideoPlayerPlus(_videoPlayerController),
+                  Icon(
+                    Icons.play_circle_filled_outlined,
+                    size: 54,
+                  ),
+                ],
+              ),
             )
-          : CircularProgressIndicator.adaptive(),
+          : Center(child: CircularProgressIndicator.adaptive()),
     );
   }
 }

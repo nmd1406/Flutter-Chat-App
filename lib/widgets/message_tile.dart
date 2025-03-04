@@ -37,6 +37,7 @@ class MessageTile extends StatelessWidget {
           var loadedMessages =
               snapshot.data!.docs.map((doc) => doc.data()).toList();
           var latestMessage = loadedMessages[0]["message"];
+          var messageType = loadedMessages[0]["messageType"];
 
           return GestureDetector(
             onTap: onOpenMessage,
@@ -60,10 +61,26 @@ class MessageTile extends StatelessWidget {
                         fontSize: 18,
                       ),
                 ),
-                subtitle: Text(
-                  latestMessage,
-                  style: TextStyle(fontSize: 16),
-                ),
+                subtitle: messageType != "text"
+                    ? Row(
+                        children: [
+                          Icon(
+                            Icons.file_copy,
+                            size: 24,
+                          ),
+                          const SizedBox(width: 5),
+                          Text(
+                            "[Đã gửi file phương tiện]",
+                            style: TextStyle(fontSize: 16),
+                          ),
+                        ],
+                      )
+                    : Text(
+                        latestMessage,
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 2,
+                        style: TextStyle(fontSize: 16),
+                      ),
               ),
             ),
           );
