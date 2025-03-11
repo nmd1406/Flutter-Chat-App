@@ -1,6 +1,8 @@
 import 'package:chat_app/screens/home.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
@@ -18,7 +20,38 @@ void main() async {
     androidProvider: AndroidProvider.debug,
     appleProvider: AppleProvider.debug,
   );
+
+  await saveFCMToken();
+  await listenToFCMTokenChange();
   runApp(const App());
+}
+
+Future<void> listenToFCMTokenChange() async {
+  FirebaseMessaging.instance.onTokenRefresh.listen(
+    (event) async {
+      await saveFCMToken();
+    },
+  );
+}
+
+Future<void> saveFCMToken() async {
+  var user = FirebaseAuth.instance.currentUser;
+  if (user == null) {
+    return;
+  }
+
+  String uid = user.uid;
+  String? token = await FirebaseMessaging.instance.getToken();
+
+  if (token == null) {
+    Future.delayed(Duration(seconds: 10), () => saveFCMToken());
+    return;
+  }
+
+  await FirebaseFirestore.instance
+      .collection("users")
+      .doc(uid)
+      .update({"fcmToken": token});
 }
 
 class App extends StatelessWidget {
