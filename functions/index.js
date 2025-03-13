@@ -71,6 +71,11 @@ exports.sendNotificationOnNewMessage = onDocumentCreated(
       },
       data: {
         click_action: "FLUTTER_NOTIFICATION_CLICK",
+        recipientEmail: recipientDoc.data().email,
+        recipientFCMToken: recipientDoc.data().fcmToken,
+        recipientImageUrl: recipientDoc.data().image_url,
+        recipientUsername: recipientDoc.data().username,
+        recipientId: recipientId,
       },
       token: recipientToken,
     };
