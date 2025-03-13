@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:chat_app/services/notification_service.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/services.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -47,6 +49,7 @@ class AuthService {
         email: email,
         password: password,
       );
+      await NotificationService.saveFCMToken();
     } on FirebaseAuthException catch (exception) {
       print(exception.message);
       return _handleAuthException(exception);
@@ -75,12 +78,28 @@ class AuthService {
         await storageRef.putFile(image);
       }
 
+      String? token = await FirebaseMessaging.instance.getToken();
+      if (token == null) {
+        Future.delayed(Duration(seconds: 5), () async {
+          String? newToken = await FirebaseMessaging.instance.getToken();
+          if (newToken != null) {
+            await FirebaseFirestore.instance
+                .collection('users')
+                .doc(userCredentials.user!.uid)
+                .update({
+              'fcmToken': newToken,
+            });
+          }
+        });
+      }
+
       final imageUrl = await storageRef.getDownloadURL();
       _auth.currentUser!.updatePhotoURL(imageUrl);
       await _firestore.collection("users").doc(userCredentials.user!.uid).set({
         "username": username,
         "email": email,
         "image_url": imageUrl,
+        "fcmToken": token,
       });
     } on FirebaseAuthException catch (exception) {
       return _handleAuthException(exception);
