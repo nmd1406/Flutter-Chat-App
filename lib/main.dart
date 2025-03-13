@@ -1,14 +1,15 @@
 import 'package:chat_app/screens/home.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:chat_app/services/notification_service.dart';
 import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 
 import 'package:chat_app/screens/splash.dart';
 import 'package:chat_app/screens/auth.dart';
+
+final navigatorKey = GlobalKey<NavigatorState>();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -21,37 +22,12 @@ void main() async {
     appleProvider: AppleProvider.debug,
   );
 
-  await saveFCMToken();
-  await listenToFCMTokenChange();
+  await NotificationService.initialize();
+  await NotificationService.saveFCMToken();
+  await NotificationService.listenToFCMTokenChange();
+  await NotificationService.backgroundNotification();
+  await NotificationService.foregroundNotification();
   runApp(const App());
-}
-
-Future<void> listenToFCMTokenChange() async {
-  FirebaseMessaging.instance.onTokenRefresh.listen(
-    (event) async {
-      await saveFCMToken();
-    },
-  );
-}
-
-Future<void> saveFCMToken() async {
-  var user = FirebaseAuth.instance.currentUser;
-  if (user == null) {
-    return;
-  }
-
-  String uid = user.uid;
-  String? token = await FirebaseMessaging.instance.getToken();
-
-  if (token == null) {
-    Future.delayed(Duration(seconds: 10), () => saveFCMToken());
-    return;
-  }
-
-  await FirebaseFirestore.instance
-      .collection("users")
-      .doc(uid)
-      .update({"fcmToken": token});
 }
 
 class App extends StatelessWidget {
@@ -60,6 +36,7 @@ class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      navigatorKey: navigatorKey,
       title: 'FlutterChat',
       theme: ThemeData().copyWith(
         colorScheme: ColorScheme.fromSeed(
