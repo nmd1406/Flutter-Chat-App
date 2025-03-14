@@ -24,49 +24,6 @@ class ChatMessages extends StatefulWidget {
 }
 
 class _ChatMessagesState extends State<ChatMessages> {
-  final ScrollController _scrollController = ScrollController();
-  var _isScrollDownVisible = true;
-
-  @override
-  void initState() {
-    super.initState();
-    _scrollController.addListener(
-      () {
-        if (_scrollController.offset <
-            _scrollController.position.maxScrollExtent) {
-          if (!_isScrollDownVisible) {
-            setState(() {
-              _isScrollDownVisible = true;
-            });
-          }
-        } else {
-          if (_isScrollDownVisible) {
-            setState(() {
-              _isScrollDownVisible = false;
-            });
-          }
-        }
-      },
-    );
-  }
-
-  @override
-  void dispose() {
-    _scrollController.dispose();
-    super.dispose();
-  }
-
-  void _scrollToBottom() {
-    if (_scrollController.hasClients) {
-      final position = _scrollController.position.maxScrollExtent;
-      _scrollController.animateTo(
-        position,
-        duration: Duration(seconds: 1),
-        curve: Curves.easeOut,
-      );
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final authenticatedUser = FirebaseAuth.instance.currentUser!;
@@ -76,9 +33,7 @@ class _ChatMessagesState extends State<ChatMessages> {
           _authService.getCurrentUserUid(), widget.otherUserId),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(
-            child: CircularProgressIndicator(),
-          );
+          return SizedBox.shrink();
         }
 
         if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
@@ -118,15 +73,11 @@ class _ChatMessagesState extends State<ChatMessages> {
                     nextMessageUserId == currentMessageUserId;
 
                 if (nextUserIsSame) {
-                  return StreamBuilder<Object>(
-                      stream: null,
-                      builder: (context, snapshot) {
-                        return MessageBubble.next(
-                          message: chatMessage["message"],
-                          messageType: chatMessage["messageType"],
-                          isMe: authenticatedUser.uid == currentMessageUserId,
-                        );
-                      });
+                  return MessageBubble.next(
+                    message: chatMessage["message"],
+                    messageType: chatMessage["messageType"],
+                    isMe: authenticatedUser.uid == currentMessageUserId,
+                  );
                 } else {
                   return StreamBuilder(
                     stream: _userService.getUserData(currentMessageUserId),
@@ -146,13 +97,6 @@ class _ChatMessagesState extends State<ChatMessages> {
                   );
                 }
               },
-            ),
-            Visibility(
-              visible: _isScrollDownVisible,
-              child: FloatingActionButton(
-                onPressed: _scrollToBottom,
-                child: Icon(Icons.download_rounded),
-              ),
             ),
           ],
         );

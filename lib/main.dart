@@ -60,7 +60,6 @@ class App extends StatelessWidget {
             // return const ChatScreen();
             return const HomeScreen();
           }
-
           return const AuthScreen();
         },
       ),

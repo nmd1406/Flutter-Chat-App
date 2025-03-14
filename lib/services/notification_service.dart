@@ -6,6 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:chat_app/main.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 class NotificationService {
@@ -91,50 +92,60 @@ class NotificationService {
       initSettings,
       onDidReceiveNotificationResponse:
           (NotificationResponse notificationResponse) {
-        String? payload = notificationResponse.payload;
-        Map<String, String> data = jsonDecode(payload!);
-        String otherUserId = data["recipientId"]!;
-        Map<String, String> otherUserData = {
-          "email": data["recipientEmail"]!,
-          "fcmToken": data["recipientFCMToken"]!,
-          "image_url": data["recipientImageUrl"]!,
-          "username": data["recipientUsername"]!,
-        };
+        if (notificationResponse.payload != null) {
+          String? payload = notificationResponse.payload;
 
-        navigatorKey.currentState?.push(MaterialPageRoute(
-          builder: (context) => ChatScreen(
-            otherUserData: otherUserData,
-            otherUserId: otherUserId,
-          ),
-        ));
+          Map<String, String> data = jsonDecode(payload!);
+          Map<String, String> otherUserData = {
+            "email": data["senderEmail"]!,
+            "fcmToken": data["senderFCMToken"]!,
+            "image_url": data["senderImageUrl"]!,
+            "username": data["senderUsername"]!,
+          };
+          String otherUserId = data["senderId"]!;
+
+          navigatorKey.currentState?.push(MaterialPageRoute(
+            builder: (context) => ChatScreen(
+              otherUserData: otherUserData,
+              otherUserId: otherUserId,
+            ),
+          ));
+        } else {
+          print("foreground noti bug");
+          return;
+        }
       },
     );
   }
 
   static void _showNotificationDeniedDialog() {
-    showDialog(
-      context: navigatorKey.currentContext!,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text("Thông báo bị tắt"),
-          content: Text(
-              "Bạn đã từ chối cấp quyền thông báo. Bạn sẽ không còn nhận thông báo tin nhắn mới. Bạn muốn cấp lại quyền thông báo chứ?"),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: Text("Tiếp tục mà không bật thông báo"),
-            ),
-            TextButton(
-              onPressed: () async {
-                Navigator.pop(context);
-                // implement open setting screen later...
-              },
-              child: Text("Cho phép bật thông báo"),
-            ),
-          ],
+    SchedulerBinding.instance.addPostFrameCallback(
+      (timeStamp) {
+        showDialog(
+          context: navigatorKey.currentContext!,
+          barrierDismissible: false,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text("Thông báo bị tắt"),
+              content: Text(
+                  "Bạn đã từ chối cấp quyền thông báo. Bạn sẽ không còn nhận thông báo tin nhắn mới. Bạn muốn cấp lại quyền thông báo chứ?"),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: Text("Tiếp tục mà không bật thông báo"),
+                ),
+                TextButton(
+                  onPressed: () async {
+                    Navigator.pop(context);
+                    // implement open setting screen later...
+                  },
+                  child: Text("Cho phép bật thông báo"),
+                ),
+              ],
+            );
+          },
         );
       },
     );
@@ -174,11 +185,11 @@ class NotificationService {
             ),
           ),
           payload: jsonEncode({
-            "email": message.data["recipientEmail"],
-            "fcmToken": message.data["recipientFCMToken"],
-            "image_url": message.data["recipientImageUrl"],
-            "username": message.data["recipientUsername"],
-            "otherUserId": message.data["recipientId"],
+            "email": message.data["senderEmail"],
+            "fcmToken": message.data["senderFCMToken"],
+            "image_url": message.data["senderImageUrl"],
+            "username": message.data["senderUsername"],
+            "otherUserId": message.data["senderId"],
           }),
         );
       }
@@ -187,12 +198,12 @@ class NotificationService {
 
   static void _onTapNotification(RemoteMessage message) {
     Map<String, String> otherUserData = {
-      "email": message.data["recipientEmail"],
-      "fcmToken": message.data["recipientFCMToken"],
-      "image_url": message.data["recipientImageUrl"],
-      "username": message.data["recipientUsername"],
+      "email": message.data["senderEmail"],
+      "fcmToken": message.data["senderFCMToken"],
+      "image_url": message.data["senderImageUrl"],
+      "username": message.data["senderUsername"],
     };
-    String otherUserId = message.data["recipientId"];
+    String otherUserId = message.data["senderId"];
 
     navigatorKey.currentState?.push(MaterialPageRoute(
       builder: (context) => ChatScreen(

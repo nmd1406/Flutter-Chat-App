@@ -26,7 +26,10 @@ class ChatService {
 
     final chatRoomRef = _firestore.collection("chat_rooms").doc(chatRoomId);
     await chatRoomRef.set(
-      {"chatRoomId": ids},
+      {
+        "chatRoomId": ids,
+        "timeStamp": timestamp,
+      },
       SetOptions(merge: true),
     );
 
@@ -52,6 +55,7 @@ class ChatService {
     return _firestore
         .collection("chat_rooms")
         .where("chatRoomId", arrayContains: uid)
+        .orderBy("timeStamp", descending: true)
         .snapshots();
   }
 }
