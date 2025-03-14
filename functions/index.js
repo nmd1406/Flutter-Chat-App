@@ -1,40 +1,3 @@
-// const functions = require("firebase-functions");
-// const admin = require("firebase-admin");
-
-// admin.initializeApp();
-
-// exports.sendNotificationOnNewMessage = functions.firestore
-//   .document("chat_rooms/{chatRoomId}/messages/{messageId}")
-//   .onCreate(async (snapshot, context) => {
-//     const messageData = snapshot.data();
-//     const recipientId = messageData.receiverId;
-//     const senderId = messageData.senderId;
-
-//     // Fetch recipient's FCM token
-//     const recipientDoc = await admin.firestore().collection("users").doc(recipientId).get();
-//     const recipientToken = recipientDoc.data().fcmToken;
-//     const senderDoc = await admin.firestore().collection("users").doc(senderId).get();
-
-//     if (!recipientToken) {
-//       console.log("No FCM token found for user:", recipientId);
-//       return;
-//     }
-
-    
-
-//     const payload = {
-//       notification: {
-//         title: senderDoc.data().username,
-//         body: messageData.messageType === "files" ? "Đã gửi file phương tiện" : messageData.message,
-//         click_action: "FLUTTER_NOTIFICATION_CLICK",
-//       },
-//       token: recipientToken,
-//     };
-
-//     await admin.messaging().send(payload);
-//   });
-
-
 const { onDocumentCreated } = require("firebase-functions/v2/firestore");
 const { getFirestore } = require("firebase-admin/firestore");
 const { getMessaging } = require("firebase-admin/messaging");
@@ -71,11 +34,11 @@ exports.sendNotificationOnNewMessage = onDocumentCreated(
       },
       data: {
         click_action: "FLUTTER_NOTIFICATION_CLICK",
-        recipientEmail: recipientDoc.data().email,
-        recipientFCMToken: recipientDoc.data().fcmToken,
-        recipientImageUrl: recipientDoc.data().image_url,
-        recipientUsername: recipientDoc.data().username,
-        recipientId: recipientId,
+        senderEmail: senderDoc.data().email,
+        senderFCMToken: senderDoc.data().fcmToken,
+        senderImageUrl: senderDoc.data().image_url,
+        senderUsername: senderDoc.data().username,
+        senderId: senderId,
       },
       token: recipientToken,
     };
