@@ -69,8 +69,25 @@ class _MessagesScreenState extends State<MessagesScreen> {
               }
 
               if (!snapshot.hasData) {
-                return Center(
-                  child: Text("Không có tin nhắn"),
+                return const Center(
+                  child: Icon(
+                    Icons.error,
+                    size: 54,
+                    color: Colors.red,
+                  ),
+                );
+              }
+
+              if (snapshot.data!.docs.isEmpty) {
+                return Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Image.asset(
+                      "assets/images/chats.png",
+                    ),
+                    Text("Ở đây có vẻ hơi trống."),
+                    Text("Hãy bắt đầu nhắn tin với ai đó."),
+                  ],
                 );
               }
 
