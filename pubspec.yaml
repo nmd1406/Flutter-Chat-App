@@ -56,6 +56,7 @@ dependencies:
   font_awesome_flutter: ^10.8.0
   url_launcher: ^6.3.1
   flutter_local_notifications: ^18.0.1
+  lottie: ^3.3.1
 
 dev_dependencies:
   flutter_test:
@@ -84,6 +85,9 @@ flutter:
     #   - images/a_dot_ham.jpeg
     - assets/images/chat.png
     - assets/images/default-avatar-profile-icon-of-social-media-user-vector.jpg
+    - assets/lottie/auth-screen.json
+    - assets/lottie/chat.json
+    - assets/images/chats.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
