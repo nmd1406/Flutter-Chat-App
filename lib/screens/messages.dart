@@ -1,3 +1,4 @@
+import 'package:animations/animations.dart';
 import 'package:chat_app/screens/chat.dart';
 import 'package:chat_app/services/auth_service.dart';
 import 'package:chat_app/services/chat_service.dart';
@@ -122,19 +123,33 @@ class _MessagesScreenState extends State<MessagesScreen> {
                       String imageUrl = userData["image_url"];
 
                       if (username.contains(query) || query.isEmpty) {
-                        return MessageTile(
-                          username: username,
-                          imageUrl: imageUrl,
-                          userId: chatRoomId[0],
-                          otherUserId: chatRoomId[1],
-                          onOpenMessage: () {
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (context) => ChatScreen(
-                                  otherUserData: userData,
-                                  otherUserId: otherUserId,
-                                ),
-                              ),
+                        return OpenContainer(
+                          closedColor: Colors.transparent,
+                          closedElevation: 0,
+                          openElevation: 0,
+                          transitionDuration: Duration(milliseconds: 320),
+                          transitionType: ContainerTransitionType.fadeThrough,
+                          middleColor:
+                              Theme.of(context).scaffoldBackgroundColor,
+                          closedShape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(24),
+                          ),
+                          openShape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(0),
+                          ),
+                          closedBuilder: (context, openContainer) {
+                            return MessageTile(
+                              username: username,
+                              imageUrl: imageUrl,
+                              userId: chatRoomId[0],
+                              otherUserId: chatRoomId[1],
+                              onOpenMessage: openContainer,
+                            );
+                          },
+                          openBuilder: (context, _) {
+                            return ChatScreen(
+                              otherUserData: userData,
+                              otherUserId: otherUserId,
                             );
                           },
                         );

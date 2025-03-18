@@ -1,3 +1,4 @@
+import 'package:animations/animations.dart';
 import 'package:chat_app/screens/chat.dart';
 import 'package:chat_app/services/auth_service.dart';
 import 'package:chat_app/services/user_service.dart';
@@ -124,19 +125,27 @@ class _FindPeopleScreenState extends State<FindPeopleScreen> {
                   final username = user["username"];
                   final imageUrl = user["image_url"];
 
-                  return UserTile(
-                    username: username,
-                    imageUrl: imageUrl,
-                    onOpenMessage: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => ChatScreen(
-                            otherUserData: user,
-                            otherUserId: otherUserId,
-                          ),
-                        ),
-                      );
-                    },
+                  return OpenContainer(
+                    closedColor: Colors.transparent,
+                    closedElevation: 0,
+                    openElevation: 0,
+                    transitionDuration: Duration(milliseconds: 320),
+                    middleColor: Theme.of(context).scaffoldBackgroundColor,
+                    closedShape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(24),
+                    ),
+                    openShape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(0),
+                    ),
+                    closedBuilder: (context, openContainer) => UserTile(
+                      username: username,
+                      imageUrl: imageUrl,
+                      onOpenMessage: openContainer,
+                    ),
+                    openBuilder: (context, closeContainer) => ChatScreen(
+                      otherUserData: user,
+                      otherUserId: otherUserId,
+                    ),
                   );
                 },
               );

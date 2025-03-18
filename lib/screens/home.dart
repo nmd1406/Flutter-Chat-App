@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 import 'package:chat_app/screens/find_friends.dart';
@@ -17,18 +18,35 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  int _currentPageIndex = 2;
+  int _currentPageIndex = 0;
   final List<Widget> _screens = [
     MessagesScreen(),
     FindPeopleScreen(),
     SettingScreen(),
   ];
-
   final List<String> _screenTitles = [
     "FlutterChat",
     "Mọi người",
     "Cài đặt",
   ];
+
+  late PageController _pageController;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _pageController = PageController(
+      initialPage: 0,
+      keepPage: true,
+    );
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
 
   Widget _buildAvatar() {
     return StreamBuilder(
@@ -74,10 +92,23 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
         ],
       ),
-      body: _screens[_currentPageIndex],
+      body: PageView(
+        controller: _pageController,
+        onPageChanged: (index) {
+          setState(() {
+            _currentPageIndex = index;
+          });
+        },
+        children: _screens,
+      ),
       bottomNavigationBar: NavigationBar(
         onDestinationSelected: (value) {
           setState(() {
+            _pageController.animateToPage(
+              value,
+              duration: Duration(milliseconds: 200),
+              curve: Curves.easeInOut,
+            );
             _currentPageIndex = value;
           });
         },
