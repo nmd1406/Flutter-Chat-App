@@ -58,8 +58,6 @@ class SettingScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var user = _authService.getCurrentUser();
-
     return Container(
       alignment: AlignmentDirectional.topCenter,
       child: SingleChildScrollView(
@@ -70,16 +68,19 @@ class SettingScreen extends StatelessWidget {
             const SizedBox(height: 15),
             _buildUsername(),
             const SizedBox(height: 45),
-            SettingTile(
-              title: "Tài khoản",
-              onTap: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => AccountSetting(),
-                  ),
-                );
-              },
-              icon: Icon(Icons.supervised_user_circle_rounded),
+            Hero(
+              tag: "Account Setting",
+              child: SettingTile(
+                title: "Tài khoản",
+                onTap: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => AccountSetting(),
+                    ),
+                  );
+                },
+                icon: Icon(Icons.supervised_user_circle_rounded),
+              ),
             ),
             SettingTile(
               title: "Thông báo và âm thanh",
