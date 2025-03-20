@@ -2,8 +2,10 @@ import 'package:chat_app/services/auth_service.dart';
 import 'package:chat_app/services/chat_service.dart';
 import 'package:chat_app/services/user_service.dart';
 import 'package:chat_app/widgets/message_bubble.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:grouped_list/grouped_list.dart';
 
 final _chatService = ChatService();
 final _authService = AuthService();
@@ -24,6 +26,12 @@ class ChatMessages extends StatefulWidget {
 }
 
 class _ChatMessagesState extends State<ChatMessages> {
+  bool _isSameDay(DateTime date1, DateTime date2) {
+    return date1.year == date2.year &&
+        date1.month == date2.month &&
+        date1.day == date2.day;
+  }
+
   @override
   Widget build(BuildContext context) {
     final authenticatedUser = FirebaseAuth.instance.currentUser!;
@@ -50,55 +58,77 @@ class _ChatMessagesState extends State<ChatMessages> {
 
         final loadedMessages = snapshot.data!.docs;
 
-        return Stack(
-          children: [
-            ListView.builder(
-              itemCount: loadedMessages.length,
-              padding: EdgeInsets.only(
-                bottom: 40,
-                left: 13,
-                right: 13,
-              ),
-              reverse: true,
-              itemBuilder: (context, index) {
-                final chatMessage = loadedMessages[index].data();
-                final nextChatMessage = (index + 1 < loadedMessages.length)
-                    ? loadedMessages[index + 1].data()
-                    : null;
-                final currentMessageUserId = chatMessage["senderId"];
-                final nextMessageUserId = nextChatMessage != null
-                    ? nextChatMessage["senderId"]
-                    : null;
-                final nextUserIsSame =
-                    nextMessageUserId == currentMessageUserId;
+        return GroupedListView(
+          elements: loadedMessages,
+          groupBy: (message) => message.data()["timeStamp"] as Timestamp,
+          groupSeparatorBuilder: (timeStamp) {
+            DateTime date = timeStamp.toDate();
+            String formattedDate = "${date.day}/${date.month}/${date.year}";
 
-                if (nextUserIsSame) {
-                  return MessageBubble.next(
+            DateTime today = DateTime.now();
+            DateTime yesterday = today.subtract(Duration(days: 1));
+            if (_isSameDay(date, today)) {
+              formattedDate = "Hôm nay";
+            } else if (_isSameDay(date, yesterday)) {
+              formattedDate = "Hôm qua";
+            }
+
+            return Center(
+              child: Padding(
+                padding: const EdgeInsets.only(top: 36, bottom: 24),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).primaryColorLight,
+                    borderRadius: BorderRadius.circular(13),
+                  ),
+                  width: 100,
+                  height: 24,
+                  child: Text(
+                    formattedDate,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontWeight: FontWeight.w500),
+                  ),
+                ),
+              ),
+            );
+          },
+          itemBuilder: (context, message) {
+            int index = loadedMessages.indexOf(message);
+
+            final chatMessage = loadedMessages[index].data();
+            final nextChatMessage = (index + 1 < loadedMessages.length)
+                ? loadedMessages[index + 1].data()
+                : null;
+            final currentMessageUserId = chatMessage["senderId"];
+            final nextMessageUserId =
+                nextChatMessage != null ? nextChatMessage["senderId"] : null;
+            final nextUserIsSame = nextMessageUserId == currentMessageUserId;
+
+            if (nextUserIsSame) {
+              return MessageBubble.next(
+                message: chatMessage["message"],
+                messageType: chatMessage["messageType"],
+                isMe: authenticatedUser.uid == currentMessageUserId,
+              );
+            } else {
+              return StreamBuilder(
+                stream: _userService.getUserData(currentMessageUserId),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return SizedBox.shrink();
+                  }
+
+                  return MessageBubble.first(
+                    userImage: snapshot.data!["image_url"],
+                    username: snapshot.data!["username"],
                     message: chatMessage["message"],
                     messageType: chatMessage["messageType"],
                     isMe: authenticatedUser.uid == currentMessageUserId,
                   );
-                } else {
-                  return StreamBuilder(
-                    stream: _userService.getUserData(currentMessageUserId),
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return SizedBox.shrink();
-                      }
-
-                      return MessageBubble.first(
-                        userImage: snapshot.data!["image_url"],
-                        username: snapshot.data!["username"],
-                        message: chatMessage["message"],
-                        messageType: chatMessage["messageType"],
-                        isMe: authenticatedUser.uid == currentMessageUserId,
-                      );
-                    },
-                  );
-                }
-              },
-            ),
-          ],
+                },
+              );
+            }
+          },
         );
       },
     );
