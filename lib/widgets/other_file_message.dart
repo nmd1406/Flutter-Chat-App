@@ -43,7 +43,7 @@ class OtherFileMessage extends StatelessWidget {
           borderRadius: BorderRadius.circular(14),
         ),
         tileColor: isMe
-            ? Colors.grey[300]
+            ? Colors.deepPurple[300]
             : Theme.of(context).colorScheme.secondary.withAlpha(200),
         leading: _fileTypeIconMap[fileExtension] ??
             Icon(

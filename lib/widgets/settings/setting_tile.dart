@@ -14,11 +14,13 @@ class SettingTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListTile(
-      titleTextStyle: Theme.of(context).textTheme.titleMedium,
-      onTap: onTap,
-      leading: icon,
-      title: Text(title),
+    return Material(
+      child: ListTile(
+        titleTextStyle: Theme.of(context).textTheme.titleMedium,
+        onTap: onTap,
+        leading: icon,
+        title: Text(title),
+      ),
     );
   }
 }
