@@ -11,6 +11,7 @@ class MessageBubble extends StatelessWidget {
     required this.message,
     required this.messageType,
     required this.isMe,
+    required this.hasRead,
   }) : isFirstInSequence = true;
 
   // Create a amessage bubble that continues the sequence.
@@ -19,6 +20,7 @@ class MessageBubble extends StatelessWidget {
     required this.message,
     required this.messageType,
     required this.isMe,
+    required this.hasRead,
   })  : isFirstInSequence = false,
         userImage = null,
         username = null;
@@ -42,6 +44,7 @@ class MessageBubble extends StatelessWidget {
 
   // Controls how the MessageBubble will be aligned.
   final bool isMe;
+  final bool hasRead;
 
   @override
   Widget build(BuildContext context) {
@@ -146,6 +149,19 @@ class MessageBubble extends StatelessWidget {
                       fileUrl: message,
                       isMe: isMe,
                     ),
+                  Visibility(
+                    visible: isMe && hasRead,
+                    child: RichText(
+                      text: TextSpan(
+                        children: [
+                          WidgetSpan(
+                            child: Icon(Icons.check),
+                          ),
+                          TextSpan(text: " Đã đọc"),
+                        ],
+                      ),
+                    ),
+                  )
                 ],
               ),
             ],

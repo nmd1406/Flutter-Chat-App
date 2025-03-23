@@ -26,6 +26,23 @@ class ChatMessages extends StatefulWidget {
 }
 
 class _ChatMessagesState extends State<ChatMessages> {
+  final String _uid = _authService.getCurrentUserUid();
+
+  @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) {
+        List<String> ids = [widget.otherUserId, _uid];
+        ids.sort();
+        String chatRoomId = ids.join("_");
+
+        _chatService.markAsRead(chatRoomId);
+      },
+    );
+  }
+
   bool _isSameDay(DateTime date1, DateTime date2) {
     return date1.year == date2.year &&
         date1.month == date2.month &&
@@ -108,6 +125,7 @@ class _ChatMessagesState extends State<ChatMessages> {
               return MessageBubble.next(
                 message: chatMessage["message"],
                 messageType: chatMessage["messageType"],
+                hasRead: chatMessage["hasRead"],
                 isMe: authenticatedUser.uid == currentMessageUserId,
               );
             } else {
@@ -123,6 +141,7 @@ class _ChatMessagesState extends State<ChatMessages> {
                     username: snapshot.data!["username"],
                     message: chatMessage["message"],
                     messageType: chatMessage["messageType"],
+                    hasRead: chatMessage["hasRead"],
                     isMe: authenticatedUser.uid == currentMessageUserId,
                   );
                 },

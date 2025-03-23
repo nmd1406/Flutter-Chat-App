@@ -66,7 +66,16 @@ class MessageTile extends StatelessWidget {
           String formattedDate = _formatDate(date);
 
           return GestureDetector(
-            onTap: onOpenMessage,
+            onTap: () {
+              if (_authService.getCurrentUserUid() ==
+                  loadedMessages[0]["receiverId"]) {
+                List<String> ids = [userId, otherUserId];
+                ids.sort();
+                String chatRoomId = ids.join("_");
+                _chatService.markAsRead(chatRoomId);
+              }
+              onOpenMessage();
+            },
             child: Padding(
               padding: const EdgeInsets.all(10.0),
               child: ListTile(
