@@ -1,10 +1,7 @@
-import 'package:chat_app/services/auth_service.dart';
 import 'package:chat_app/services/chat_service.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 final _chatService = ChatService();
-final _authService = AuthService();
 
 class MessageTile extends StatelessWidget {
   final String username;
@@ -21,24 +18,6 @@ class MessageTile extends StatelessWidget {
     required this.otherUserId,
     required this.onOpenMessage,
   });
-
-  bool _isSameDay(DateTime date1, DateTime date2) {
-    return date1.year == date2.year &&
-        date1.month == date2.month &&
-        date1.day == date2.day;
-  }
-
-  String _formatDate(DateTime date) {
-    DateTime today = DateTime.now();
-    DateTime yesterday = today.subtract(Duration(days: 1));
-    if (_isSameDay(today, date)) {
-      return "${date.hour}:${date.minute}";
-    }
-    if (_isSameDay(yesterday, date)) {
-      return "H.qua";
-    }
-    return "${date.day}/${date.month}";
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -59,11 +38,6 @@ class MessageTile extends StatelessWidget {
               snapshot.data!.docs.map((doc) => doc.data()).toList();
           var latestMessage = loadedMessages[0]["message"];
           var messageType = loadedMessages[0]["messageType"];
-          bool isMe =
-              loadedMessages[0]["senderId"] == _authService.getCurrentUserUid();
-          DateTime date =
-              (loadedMessages[0]["timeStamp"] as Timestamp).toDate();
-          String formattedDate = _formatDate(date);
 
           return GestureDetector(
             onTap: () {
@@ -89,7 +63,6 @@ class MessageTile extends StatelessWidget {
                       Theme.of(context).colorScheme.primary.withAlpha(180),
                   backgroundImage: NetworkImage(imageUrl),
                 ),
-                trailing: Text(formattedDate),
                 title: Text(
                   username,
                   style: Theme.of(context).textTheme.bodyLarge!.copyWith(
@@ -106,13 +79,13 @@ class MessageTile extends StatelessWidget {
                           ),
                           const SizedBox(width: 5),
                           Text(
-                            "${isMe ? "Bạn:" : null} [Đã gửi file phương tiện]",
+                            "[Đã gửi file phương tiện]",
                             style: TextStyle(fontSize: 16),
                           ),
                         ],
                       )
                     : Text(
-                        "${isMe ? "Bạn:" : null} $latestMessage",
+                        latestMessage,
                         overflow: TextOverflow.ellipsis,
                         maxLines: 2,
                         style: TextStyle(fontSize: 16),
