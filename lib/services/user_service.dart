@@ -7,7 +7,7 @@ class UserService {
   final _firestore = FirebaseFirestore.instance;
 
   Stream<QuerySnapshot<Map<String, dynamic>>> getUsersStream() {
-    return _firestore.collection("users").snapshots();
+    return _firestore.collection("users").snapshots().distinct();
   }
 
   Stream<Map<String, dynamic>?> getUserData(String userId) {
@@ -15,7 +15,8 @@ class UserService {
         .collection("users")
         .doc(userId)
         .snapshots()
-        .map((doc) => doc.data());
+        .map((doc) => doc.data())
+        .distinct();
     return userData;
   }
 
