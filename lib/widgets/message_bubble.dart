@@ -1,5 +1,8 @@
 import 'package:chat_app/widgets/file_message_bubble.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+
+final _formatter = DateFormat("HH:mm");
 
 // A MessageBubble for showing a single chat message on the ChatScreen.
 class MessageBubble extends StatelessWidget {
@@ -11,6 +14,8 @@ class MessageBubble extends StatelessWidget {
     required this.message,
     required this.messageType,
     required this.isMe,
+    required this.timeStamp,
+    required this.hasRead,
   }) : isFirstInSequence = true;
 
   // Create a amessage bubble that continues the sequence.
@@ -19,6 +24,8 @@ class MessageBubble extends StatelessWidget {
     required this.message,
     required this.messageType,
     required this.isMe,
+    required this.timeStamp,
+    required this.hasRead,
   })  : isFirstInSequence = false,
         userImage = null,
         username = null;
@@ -42,6 +49,8 @@ class MessageBubble extends StatelessWidget {
 
   // Controls how the MessageBubble will be aligned.
   final bool isMe;
+  final DateTime timeStamp;
+  final bool hasRead;
 
   @override
   Widget build(BuildContext context) {
@@ -128,17 +137,41 @@ class MessageBubble extends StatelessWidget {
                         vertical: 4,
                         horizontal: 12,
                       ),
-                      child: Text(
-                        message,
-                        style: TextStyle(
-                          // Add a little line spacing to make the text look nicer
-                          // when multilined.
-                          height: 1.3,
-                          color: isMe
-                              ? Colors.black87
-                              : theme.colorScheme.onSecondary,
-                        ),
-                        softWrap: true,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: isMe
+                            ? CrossAxisAlignment.end
+                            : CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            message,
+                            style: TextStyle(
+                              // Add a little line spacing to make the text look nicer
+                              // when multilined.
+                              height: 1.3,
+                              color: isMe
+                                  ? Colors.black87
+                                  : theme.colorScheme.onSecondary,
+                            ),
+                            softWrap: true,
+                          ),
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                _formatter.format(timeStamp),
+                                style: TextStyle(fontSize: 12),
+                                textAlign: TextAlign.end,
+                              ),
+                              if (isMe && hasRead) const SizedBox(width: 4),
+                              if (isMe && hasRead)
+                                Icon(
+                                  Icons.check,
+                                  size: 14,
+                                ),
+                            ],
+                          ),
+                        ],
                       ),
                     )
                   else
