@@ -17,7 +17,6 @@ class ChatService {
       "timeStamp": timestamp,
       "message": message,
       "messageType": messageType,
-      "hasRead": false,
     };
 
     List<String> ids = [currentUserId, receiverId];
@@ -58,19 +57,5 @@ class ChatService {
         .where("chatRoomId", arrayContains: uid)
         .orderBy("timeStamp", descending: true)
         .snapshots();
-  }
-
-  Future<void> markAsRead(String chatRoomId) async {
-    await _firestore
-        .collection("chat_rooms")
-        .doc(chatRoomId)
-        .collection("messages")
-        .where("hasRead", isEqualTo: false)
-        .get()
-        .then((messages) {
-      for (var message in messages.docs) {
-        message.reference.update({"hasRead": true});
-      }
-    });
   }
 }

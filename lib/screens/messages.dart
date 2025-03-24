@@ -99,7 +99,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
                 shrinkWrap: true,
                 itemCount: chatRooms.length,
                 itemBuilder: (context, index) {
-                  String chatRoomId = chatRooms[index]["chatRoomId"];
+                  final chatRoomId = chatRooms[index]["chatRoomId"];
                   final otherUserId = chatRoomId[0] == currentUserUid
                       ? chatRoomId[1]
                       : chatRoomId[0];
