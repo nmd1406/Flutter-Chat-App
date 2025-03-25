@@ -1,4 +1,6 @@
 import 'package:chat_app/screens/settings/account_setting.dart';
+import 'package:chat_app/screens/settings/media_files_setting.dart';
+import 'package:chat_app/screens/settings/sound_and_notification_setting.dart';
 import 'package:flutter/material.dart';
 
 import 'package:chat_app/services/auth_service.dart';
@@ -56,6 +58,25 @@ class SettingScreen extends StatelessWidget {
     );
   }
 
+  Route _createRouteSlideTransition() {
+    return PageRouteBuilder(
+      pageBuilder: (context, animation, secondaryAnimation) =>
+          SoundAndNotificationSettingScreen(),
+      transitionsBuilder: (context, animation, secondaryAnimation, child) {
+        const begin = Offset(1, 0);
+        const end = Offset.zero;
+        final tween = Tween(begin: begin, end: end);
+        final curveAnimation =
+            CurvedAnimation(parent: animation, curve: Curves.decelerate);
+
+        return SlideTransition(
+          position: tween.animate(curveAnimation),
+          child: child,
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -79,25 +100,61 @@ class SettingScreen extends StatelessWidget {
                     ),
                   );
                 },
-                icon: Icon(Icons.supervised_user_circle_rounded),
+                icon: Icon(
+                  Icons.supervised_user_circle_rounded,
+                  color: Colors.indigoAccent,
+                  size: 36,
+                ),
               ),
             ),
             SettingTile(
-              title: "Thông báo và âm thanh",
-              onTap: () {},
-              icon: Icon(Icons.notifications),
+              title: "Thông báo & âm thanh",
+              onTap: () =>
+                  Navigator.of(context).push(_createRouteSlideTransition()),
+              icon: Icon(
+                Icons.notifications,
+                color: Colors.amberAccent,
+                size: 36,
+              ),
             ),
             SettingTile(
               title: "Ảnh & file phương tiện",
-              onTap: () {},
-              icon: Icon(Icons.perm_media),
+              onTap: () => Navigator.of(context).push(MaterialPageRoute(
+                builder: (context) => MediaFilesSettingScreen(),
+              )),
+              icon: Icon(
+                Icons.perm_media,
+                color: Colors.lightGreen,
+                size: 36,
+              ),
             ),
             SettingTile(
               title: "Đăng xuất",
               onTap: () {
-                _authService.signOut();
+                showDialog(
+                  context: context,
+                  builder: (context) => AlertDialog(
+                    title: Text("Đăng xuất"),
+                    content: Text("Bạn sẽ đăng xuất khỏi ứng dụng."),
+                    actions: [
+                      ElevatedButton(
+                        onPressed: () => _authService.signOut(),
+                        child: Text("Đăng xuất"),
+                      ),
+                      TextButton(
+                        onPressed: () => Navigator.pop(context),
+                        child: Text("Huỷ"),
+                      ),
+                    ],
+                  ),
+                );
+                // _authService.signOut();
               },
-              icon: Icon(Icons.exit_to_app),
+              icon: Icon(
+                Icons.exit_to_app_rounded,
+                color: Colors.red[700],
+                size: 36,
+              ),
             ),
           ],
         ),
