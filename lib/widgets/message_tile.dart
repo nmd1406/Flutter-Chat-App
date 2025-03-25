@@ -106,22 +106,13 @@ class MessageTile extends StatelessWidget {
                     ),
               ),
               subtitle: messageType != "text"
-                  ? Row(
-                      children: [
-                        Icon(
-                          Icons.file_copy,
-                          size: 24,
-                        ),
-                        const SizedBox(width: 5),
-                        Text(
-                          "${isMe ? "Bạn: " : ""}[Đã gửi file phương tiện]",
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight:
-                                hasRead ? FontWeight.bold : FontWeight.normal,
-                          ),
-                        ),
-                      ],
+                  ? Text(
+                      "${isMe ? "Bạn: " : ""}[Đã gửi file phương tiện]",
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight:
+                            hasRead ? FontWeight.bold : FontWeight.normal,
+                      ),
                     )
                   : Text(
                       "${isMe ? "Bạn: " : ""}$latestMessage",

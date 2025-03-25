@@ -35,7 +35,7 @@ class _NewMessageState extends State<NewMessage> {
   }
 
   void _pickFiles() async {
-    bool isGranted = await _fileService.requestPermissions();
+    bool isGranted = await _fileService.requestPermissions().isGranted;
     if (!isGranted) {
       print("permission not granted");
       return;

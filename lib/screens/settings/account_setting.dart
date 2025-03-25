@@ -1,12 +1,10 @@
-import 'package:chat_app/services/auth_service.dart';
+import 'package:chat_app/screens/settings/sound_and_notification_setting.dart';
 import 'package:chat_app/widgets/settings/change_avatar.dart';
 import 'package:chat_app/widgets/settings/change_password_popup.dart';
 import 'package:chat_app/widgets/settings/change_username_popup.dart';
 import 'package:flutter/material.dart';
 
 import 'package:chat_app/widgets/settings/setting_tile.dart';
-
-final _authService = AuthService();
 
 class AccountSetting extends StatelessWidget {
   const AccountSetting({super.key});
@@ -39,7 +37,7 @@ class AccountSetting extends StatelessWidget {
       child: Scaffold(
         appBar: AppBar(
           title: Text(
-            "Người dùng",
+            "Tài khoản",
             style: Theme.of(context).textTheme.headlineMedium!.copyWith(
                   color: Theme.of(context).primaryColor,
                   fontWeight: FontWeight.bold,

@@ -55,11 +55,11 @@ class _VideoMessageState extends State<VideoMessage> {
   Widget build(BuildContext context) {
     return Container(
       constraints: BoxConstraints(
-        maxWidth: MediaQuery.of(context).size.width * 0.8,
+        maxWidth: MediaQuery.of(context).size.width * 0.6,
         maxHeight: 300,
       ),
-      height: widget.height,
-      width: widget.width,
+      height: widget.height * 0.3,
+      width: widget.width * 0.3,
       child: _videoPlayerController.value.isInitialized
           ? AspectRatio(
               aspectRatio: _videoPlayerController.value.aspectRatio,

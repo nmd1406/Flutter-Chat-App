@@ -46,6 +46,7 @@ class FileMessageBubble extends StatelessWidget {
             ? _fileService.getImageDimensionFromFile(file)
             : _fileService.getImageDimensionFromUrl(fileUrl),
         builder: (context, snapshot) {
+          print("image");
           if (snapshot.connectionState == ConnectionState.waiting) {
             return SizedBox(
               height: 300,
@@ -69,9 +70,10 @@ class FileMessageBubble extends StatelessWidget {
     if (_videoFileExtension.contains(fileExtension)) {
       return FutureBuilder(
         future: file != null
-            ? _fileService.getImageDimensionFromFile(file)
-            : _fileService.getImageDimensionFromUrl(fileUrl),
+            ? _fileService.getVideoDimensionFromFile(file)
+            : _fileService.getVideoDimensionFromUrl(fileUrl),
         builder: (context, snapshot) {
+          print("video");
           if (snapshot.connectionState == ConnectionState.waiting) {
             return SizedBox(
               height: 300,
