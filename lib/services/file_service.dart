@@ -13,27 +13,30 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:http/http.dart' as http;
 
 class FileService {
-  Future<bool> requestPermissions() async {
-    return await Permission.manageExternalStorage.request().isGranted;
+  Future<PermissionStatus> requestPermissions() async {
+    return await Permission.manageExternalStorage.request();
   }
 
   Future<File?> openFile(
       String fileUrl, String fileName, BuildContext context) async {
     // Then in your openFile method:
-    if (!await requestPermissions()) {
-      print("Storage permission denied");
+    if (!await requestPermissions().isGranted) {
       return null;
     }
 
     try {
       // Get storage directory
-      Directory directory = await path.getApplicationDocumentsDirectory();
-      String filePath = '${directory.path}/media_files/$fileName';
+      Directory directory =
+          Directory('/storage/emulated/0/Download/chat_app/media_files');
+      if (!await directory.exists()) {
+        await directory.create(recursive: true);
+      }
+      String filePath = '${directory.path}/$fileName';
       File file = File(filePath);
 
       // Check if file already exists
       if (await file.exists()) {
-        print("File already exists, opening...");
+        print(file.path);
         var result = await OpenFile.open(filePath);
         if (result.type == ResultType.noAppToOpen && context.mounted) {
           // Show dialog to suggest installing an app
@@ -53,7 +56,6 @@ class FileService {
         }
       });
 
-      print("File downloaded to: $filePath");
       await OpenFile.open(filePath);
       return file;
     } catch (e) {
@@ -198,5 +200,27 @@ class FileService {
     const List<String> suffixes = ["B", "KB", "MB", "GB"];
     int suffixIndex = (log(bytes) / log(1024)).floor();
     return '${(bytes / pow(1024, suffixIndex)).toStringAsFixed(2)} ${suffixes[suffixIndex]}';
+  }
+
+  String getMediaFilesDirectory() {
+    Directory dir =
+        Directory('/storage/emulated/0/Download/chat_app/media_files');
+
+    return dir.path;
+  }
+
+  Future<void> deleteAllMediaFiles() async {
+    String filePath = getMediaFilesDirectory();
+    Directory directory = Directory(filePath);
+
+    if (directory.existsSync()) {
+      for (var file in directory.listSync()) {
+        if (file is File) {
+          file.deleteSync();
+        } else if (file is Directory) {
+          file.deleteSync(recursive: true);
+        }
+      }
+    }
   }
 }
