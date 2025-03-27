@@ -130,7 +130,7 @@ class MessageTile extends StatelessWidget {
                   Text(formattedDate),
                   const SizedBox(height: 5),
                   Visibility(
-                    visible: !hasRead && !isMe,
+                    visible: hasRead,
                     child: Icon(
                       Icons.circle,
                       size: 18,

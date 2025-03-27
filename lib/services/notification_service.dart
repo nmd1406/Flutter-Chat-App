@@ -20,8 +20,9 @@ class NotificationService {
     'High Importance Notifications', // title
     description:
         "This channel is used for important notifications.", // description
-    importance: Importance.high,
+    importance: Importance.max,
     playSound: true,
+    sound: RawResourceAndroidNotificationSound("notify"),
   );
 
   static Future<void> initialize() async {
@@ -111,7 +112,6 @@ class NotificationService {
             ),
           ));
         } else {
-          print("foreground noti bug");
           return;
         }
       },
@@ -181,7 +181,9 @@ class NotificationService {
               _channel.name,
               channelDescription: _channel.description,
               icon: android.smallIcon,
-              importance: Importance.high,
+              importance: Importance.max,
+              playSound: true,
+              sound: RawResourceAndroidNotificationSound("notify"),
             ),
           ),
           payload: jsonEncode({

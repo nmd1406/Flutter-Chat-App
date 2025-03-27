@@ -1,4 +1,3 @@
-import 'package:chat_app/screens/settings/sound_and_notification_setting.dart';
 import 'package:chat_app/widgets/settings/change_avatar.dart';
 import 'package:chat_app/widgets/settings/change_password_popup.dart';
 import 'package:chat_app/widgets/settings/change_username_popup.dart';
