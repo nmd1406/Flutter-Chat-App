@@ -1,3 +1,4 @@
+import 'package:app_settings/app_settings.dart';
 import 'package:flutter/material.dart';
 
 class SoundAndNotificationSettingScreen extends StatelessWidget {
@@ -14,6 +15,18 @@ class SoundAndNotificationSettingScreen extends StatelessWidget {
                 fontWeight: FontWeight.bold,
               ),
         ),
+      ),
+      body: Column(
+        children: [
+          ListTile(
+            titleTextStyle: Theme.of(context).textTheme.titleMedium,
+            onTap: () async {
+              await AppSettings.openAppSettings(
+                  type: AppSettingsType.notification);
+            },
+            title: Text("Tuỳ chỉnh âm thanh"),
+          ),
+        ],
       ),
     );
   }
