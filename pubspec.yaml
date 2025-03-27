@@ -60,6 +60,8 @@ dependencies:
   animations: ^2.0.11
   grouped_list: ^6.0.0
   intl: ^0.20.2
+  app_settings: ^5.2.0
+  
 
 dev_dependencies:
   flutter_test:
@@ -91,6 +93,12 @@ flutter:
     - assets/lottie/auth-screen.json
     - assets/lottie/chat.json
     - assets/images/chats.png
+    - assets/sounds/alarm.mp3
+    - assets/sounds/generic.mp3
+    - assets/sounds/level_up.mp3
+    - assets/sounds/notify.mp3
+    - assets/sounds/synth.mp3
+
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
