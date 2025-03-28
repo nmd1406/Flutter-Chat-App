@@ -1,9 +1,11 @@
 import 'package:chat_app/screens/home.dart';
+import 'package:chat_app/screens/onboarding.dart';
 import 'package:chat_app/services/notification_service.dart';
 import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'firebase_options.dart';
 
 import 'package:chat_app/screens/splash.dart';
@@ -22,16 +24,25 @@ void main() async {
     appleProvider: AppleProvider.debug,
   );
 
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  bool isFirstTime = prefs.getBool("isFirstTime") ?? true;
+
   await NotificationService.initialize();
   await NotificationService.saveFCMToken();
   await NotificationService.listenToFCMTokenChange();
   await NotificationService.backgroundNotification();
   await NotificationService.foregroundNotification();
-  runApp(const App());
+
+  runApp(App(isFirstTime: isFirstTime));
 }
 
 class App extends StatelessWidget {
-  const App({super.key});
+  final bool isFirstTime;
+
+  const App({
+    super.key,
+    required this.isFirstTime,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -50,19 +61,21 @@ class App extends StatelessWidget {
       routes: {
         "/auth": (context) => AuthScreen(),
       },
-      home: StreamBuilder(
-        stream: FirebaseAuth.instance.authStateChanges(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const SplashScreen();
-          }
-          if (snapshot.hasData) {
-            // return const ChatScreen();
-            return const HomeScreen();
-          }
-          return const AuthScreen();
-        },
-      ),
+      home: isFirstTime
+          ? OnboardingSceen()
+          : StreamBuilder(
+              stream: FirebaseAuth.instance.authStateChanges(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const SplashScreen();
+                }
+                if (snapshot.hasData) {
+                  // return const ChatScreen();
+                  return const HomeScreen();
+                }
+                return const AuthScreen();
+              },
+            ),
     );
   }
 }
