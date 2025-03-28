@@ -4,7 +4,9 @@ import 'package:chat_app/screens/forget_password.dart';
 import 'package:chat_app/services/auth_service.dart';
 import 'package:chat_app/widgets/user_image_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:lottie/lottie.dart';
+import 'package:path_provider/path_provider.dart';
 
 final _auth = AuthService();
 
@@ -29,12 +31,12 @@ class _AuthScreenState extends State<AuthScreen> with TickerProviderStateMixin {
   void _submit() async {
     final isValid = _formKey.currentState!.validate();
 
-    if (!isValid || (!_isLogin && _selectedImage == null)) {
+    if (!isValid) {
       return;
     }
 
     _formKey.currentState!.save();
-
+    _selectedImage ??= await _getAssetImageAsFile();
     String? errorMessage = "";
     setState(() {
       _isAuthenticating = true;
@@ -63,6 +65,17 @@ class _AuthScreenState extends State<AuthScreen> with TickerProviderStateMixin {
 
       return;
     }
+  }
+
+  Future<File> _getAssetImageAsFile() async {
+    var data = await rootBundle.load(
+        "assets/images/default-avatar-profile-icon-of-social-media-user-vector.jpg");
+    Uint8List byte = data.buffer.asUint8List();
+    Directory tempDir = await getTemporaryDirectory();
+    String imagePath = "$tempDir/defaul_avatar.jpg";
+    File imageFile = File(imagePath);
+    await imageFile.writeAsBytes(byte);
+    return imageFile;
   }
 
   @override
