@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:app_settings/app_settings.dart';
 import 'package:chat_app/screens/chat.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -139,7 +140,8 @@ class NotificationService {
                 TextButton(
                   onPressed: () async {
                     Navigator.pop(context);
-                    // implement open setting screen later...
+                    await AppSettings.openAppSettings(
+                        type: AppSettingsType.notification);
                   },
                   child: Text("Cho phép bật thông báo"),
                 ),

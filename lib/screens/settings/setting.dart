@@ -138,7 +138,10 @@ class SettingScreen extends StatelessWidget {
                     content: Text("Bạn sẽ đăng xuất khỏi ứng dụng."),
                     actions: [
                       ElevatedButton(
-                        onPressed: () => _authService.signOut(),
+                        onPressed: () {
+                          _authService.signOut();
+                          Navigator.of(context).pop();
+                        },
                         child: Text("Đăng xuất"),
                       ),
                       TextButton(

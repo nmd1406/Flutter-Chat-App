@@ -4,7 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-final _dayMonthformatter = DateFormat("dd:MM");
+final _dayMonthformatter = DateFormat("dd/MM");
 final _hourMinuteFormatter = DateFormat("HH:mm");
 final _chatService = ChatService();
 final _authService = AuthService();

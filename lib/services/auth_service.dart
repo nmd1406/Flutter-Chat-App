@@ -58,7 +58,7 @@ class AuthService {
   }
 
   Future<String?> signUp(
-      String email, String password, String username, File? image) async {
+      String email, String password, String username, File image) async {
     try {
       final userCredentials = await _auth.createUserWithEmailAndPassword(
         email: email,
@@ -70,13 +70,7 @@ class AuthService {
           .child("user_images")
           .child("${userCredentials.user!.uid}.jpg");
 
-      if (image == null) {
-        File defaultImage = await _getImageFileFromAssets(
-            "images/default-avatar-profile-icon-of-social-media-user-vector.jpg");
-        await storageRef.putFile(defaultImage);
-      } else {
-        await storageRef.putFile(image);
-      }
+      await storageRef.putFile(image);
 
       String? token = await FirebaseMessaging.instance.getToken();
       if (token == null) {

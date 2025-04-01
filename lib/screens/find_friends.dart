@@ -113,7 +113,7 @@ class _FindPeopleScreenState extends State<FindPeopleScreen> {
               // Khi tìm kiếm người dùng thì hiển thị tất cả các kết quả trùng khớp
               // Đối với phần gợi ý khi không tìm kiếm thì chỉ hiển thị tối đa 10 người dùng
               int userDisplayCount = query.isEmpty
-                  ? (userData.length < 10 ? userData.length : 10)
+                  ? (userData.length < 6 ? userData.length : 6)
                   : userData.length;
 
               return ListView.builder(
