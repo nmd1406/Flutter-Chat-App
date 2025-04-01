@@ -36,7 +36,6 @@ class _AuthScreenState extends State<AuthScreen> with TickerProviderStateMixin {
     }
 
     _formKey.currentState!.save();
-    _selectedImage ??= await _getAssetImageAsFile();
     String? errorMessage = "";
     setState(() {
       _isAuthenticating = true;
@@ -44,6 +43,8 @@ class _AuthScreenState extends State<AuthScreen> with TickerProviderStateMixin {
     if (_isLogin) {
       errorMessage = await _auth.signIn(_enteredEmail, _enteredPassword);
     } else {
+      _selectedImage ??= await _getAssetImageAsFile();
+
       errorMessage = await _auth.signUp(
         _enteredEmail,
         _enteredPassword,
@@ -68,14 +69,15 @@ class _AuthScreenState extends State<AuthScreen> with TickerProviderStateMixin {
   }
 
   Future<File> _getAssetImageAsFile() async {
-    var data = await rootBundle.load(
-        "assets/images/default-avatar-profile-icon-of-social-media-user-vector.jpg");
-    Uint8List byte = data.buffer.asUint8List();
-    Directory tempDir = await getTemporaryDirectory();
-    String imagePath = "$tempDir/defaul_avatar.jpg";
-    File imageFile = File(imagePath);
-    await imageFile.writeAsBytes(byte);
-    return imageFile;
+    String path =
+        "assets/images/default-avatar-profile-icon-of-social-media-user-vector.jpg";
+    var data = await rootBundle.load(path);
+    final file = File('${(await getTemporaryDirectory()).path}/$path');
+    await file.create(recursive: true);
+    await file.writeAsBytes(
+        data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes));
+
+    return file;
   }
 
   @override
