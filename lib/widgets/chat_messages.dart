@@ -72,7 +72,23 @@ class _ChatMessagesState extends State<ChatMessages> {
 
           if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
             return Center(
-              child: Text("Không có tin nhắn"),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SizedBox(
+                    width: 200,
+                    height: 200,
+                    child: Image.asset("assets/images/conversation.png"),
+                  ),
+                  const SizedBox(height: 10),
+                  Text(
+                    "Bắt đầu cuộc trò chuyện",
+                    style: Theme.of(context).textTheme.labelLarge!.copyWith(
+                          color: Theme.of(context).primaryColor,
+                        ),
+                  ),
+                ],
+              ),
             );
           }
 
