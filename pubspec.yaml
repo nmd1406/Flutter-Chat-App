@@ -91,9 +91,15 @@ flutter:
     #   - images/a_dot_ham.jpeg
     - assets/images/chat.png
     - assets/images/default-avatar-profile-icon-of-social-media-user-vector.jpg
+    - assets/images/chats.png
+    - assets/images/conversation.png
+
     - assets/lottie/auth-screen.json
     - assets/lottie/chat.json
-    - assets/images/chats.png
+    - assets/lottie/security.json
+    - assets/lottie/welcome.json
+    - assets/lottie/send_message.json
+
     - assets/sounds/alarm.mp3
     - assets/sounds/generic.mp3
     - assets/sounds/level_up.mp3
