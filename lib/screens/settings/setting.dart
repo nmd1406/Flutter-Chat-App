@@ -89,22 +89,19 @@ class SettingScreen extends StatelessWidget {
             const SizedBox(height: 15),
             _buildUsername(),
             const SizedBox(height: 45),
-            Hero(
-              tag: "Account Setting",
-              child: SettingTile(
-                title: "Tài khoản",
-                onTap: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => AccountSetting(),
-                    ),
-                  );
-                },
-                icon: Icon(
-                  Icons.supervised_user_circle_rounded,
-                  color: Colors.indigoAccent,
-                  size: 36,
-                ),
+            SettingTile(
+              title: "Tài khoản",
+              onTap: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => AccountSetting(),
+                  ),
+                );
+              },
+              icon: Icon(
+                Icons.supervised_user_circle_rounded,
+                color: Colors.indigoAccent,
+                size: 36,
               ),
             ),
             SettingTile(

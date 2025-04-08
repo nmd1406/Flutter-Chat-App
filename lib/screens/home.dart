@@ -19,9 +19,9 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int _currentPageIndex = 0;
   final List<Widget> _screens = [
-    MessagesScreen(),
-    FindPeopleScreen(),
-    SettingScreen(),
+    const MessagesScreen(),
+    const FindPeopleScreen(),
+    const SettingScreen(),
   ];
   final List<String> _screenTitles = [
     "FlutterChat",

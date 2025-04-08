@@ -33,15 +33,7 @@ class _ChatMessagesState extends State<ChatMessages> {
   void initState() {
     super.initState();
     _scrollController = ScrollController();
-    WidgetsBinding.instance.addPostFrameCallback(
-      (_) {
-        List<String> ids = [widget.otherUserId, _uid];
-        ids.sort();
-        String chatRoomId = ids.join("_");
-
-        _chatService.markAsRead(chatRoomId);
-      },
-    );
+    _markAsRead();
   }
 
   @override
@@ -54,6 +46,18 @@ class _ChatMessagesState extends State<ChatMessages> {
     return date1.year == date2.year &&
         date1.month == date2.month &&
         date1.day == date2.day;
+  }
+
+  void _markAsRead() {
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) {
+        List<String> ids = [widget.otherUserId, _uid];
+        ids.sort();
+        String chatRoomId = ids.join("_");
+
+        _chatService.markAsRead(chatRoomId);
+      },
+    );
   }
 
   @override
@@ -99,6 +103,7 @@ class _ChatMessagesState extends State<ChatMessages> {
           }
 
           final loadedMessages = snapshot.data!.docs;
+          _markAsRead();
 
           return GroupedListView(
             controller: _scrollController,

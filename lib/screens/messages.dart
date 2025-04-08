@@ -86,8 +86,8 @@ class _MessagesScreenState extends State<MessagesScreen> {
                     Image.asset(
                       "assets/images/chats.png",
                     ),
-                    Text("Ở đây có vẻ hơi trống."),
-                    Text("Hãy bắt đầu nhắn tin với ai đó."),
+                    const Text("Ở đây có vẻ hơi trống."),
+                    const Text("Hãy bắt đầu nhắn tin với ai đó."),
                   ],
                 );
               }
@@ -109,11 +109,11 @@ class _MessagesScreenState extends State<MessagesScreen> {
                     stream: user,
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
-                        return SizedBox.shrink();
+                        return const SizedBox.shrink();
                       }
 
                       if (!snapshot.hasData) {
-                        return Center(
+                        return const Center(
                           child: Text("Error loading user data"),
                         );
                       }

@@ -86,7 +86,7 @@ class _FindPeopleScreenState extends State<FindPeopleScreen> {
               }
 
               if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                return Center(
+                return const Center(
                   child: Text("Không có người dùng"),
                 );
               }
@@ -101,11 +101,14 @@ class _FindPeopleScreenState extends State<FindPeopleScreen> {
                   final user = doc.data();
                   return user["username"].contains(query);
                 },
-              ).toList()
-                ..shuffle();
+              ).toList();
+
+              if (query.isEmpty) {
+                userData.shuffle();
+              }
 
               if (userData.isEmpty) {
-                return Center(
+                return const Center(
                   child: Text("Không có người dùng"),
                 );
               }

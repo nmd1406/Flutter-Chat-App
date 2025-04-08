@@ -31,44 +31,41 @@ class AccountSetting extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Hero(
-      tag: "Account Setting",
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text(
-            "Tài khoản",
-            style: Theme.of(context).textTheme.headlineMedium!.copyWith(
-                  color: Theme.of(context).primaryColor,
-                  fontWeight: FontWeight.bold,
-                ),
-          ),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          "Tài khoản",
+          style: Theme.of(context).textTheme.headlineMedium!.copyWith(
+                color: Theme.of(context).primaryColor,
+                fontWeight: FontWeight.bold,
+              ),
         ),
-        body: SingleChildScrollView(
-          child: Column(
-            children: [
-              SettingTile(
-                title: "Thay đổi tên người dùng",
-                icon: null,
-                onTap: () {
-                  _buildChangeUsername(context);
-                },
-              ),
-              SettingTile(
-                title: "Thay đổi ảnh đại diện",
-                icon: null,
-                onTap: () {
-                  _buildChangeAvatar(context);
-                },
-              ),
-              SettingTile(
-                title: "Thay đổi mật khẩu",
-                icon: null,
-                onTap: () {
-                  _changePasswordPopUp(context);
-                },
-              ),
-            ],
-          ),
+      ),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            SettingTile(
+              title: "Thay đổi tên người dùng",
+              icon: null,
+              onTap: () {
+                _buildChangeUsername(context);
+              },
+            ),
+            SettingTile(
+              title: "Thay đổi ảnh đại diện",
+              icon: null,
+              onTap: () {
+                _buildChangeAvatar(context);
+              },
+            ),
+            SettingTile(
+              title: "Thay đổi mật khẩu",
+              icon: null,
+              onTap: () {
+                _changePasswordPopUp(context);
+              },
+            ),
+          ],
         ),
       ),
     );
