@@ -11,21 +11,21 @@ class AccountSetting extends StatelessWidget {
   void _changePasswordPopUp(BuildContext context) {
     showDialog(
       context: context,
-      builder: (context) => ChangePasswordPopup(),
+      builder: (context) => const ChangePasswordPopup(),
     );
   }
 
   void _buildChangeAvatar(BuildContext context) {
     showModalBottomSheet(
       context: context,
-      builder: (context) => ChangeAvatar(),
+      builder: (context) => const ChangeAvatar(),
     );
   }
 
   void _buildChangeUsername(BuildContext context) {
     showDialog(
       context: context,
-      builder: (context) => ChangeUsernamePopup(),
+      builder: (context) => const ChangeUsernamePopup(),
     );
   }
 

@@ -50,14 +50,14 @@ class _ChangePasswordPopupState extends State<ChangePasswordPopup> {
     await _authService.changePassword(_newPasswordController.text);
 
     if (mounted) {
-      Navigator.pushReplacementNamed(context, "/auth");
+      Navigator.pushNamedAndRemoveUntil(context, "/auth", (route) => false);
       showDialog(
         context: context,
         builder: (context) => SimpleDialog(
           contentPadding: EdgeInsets.symmetric(horizontal: 12),
-          title: Text("Thông báo"),
+          title: const Text("Thông báo"),
           children: [
-            Text("Thay đổi mật khẩu thành công. Vui lòng đăng nhập lại."),
+            const Text("Thay đổi mật khẩu thành công. Vui lòng đăng nhập lại."),
             const SizedBox(height: 10),
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
@@ -66,7 +66,7 @@ class _ChangePasswordPopupState extends State<ChangePasswordPopup> {
                   onPressed: () {
                     Navigator.of(context).pop();
                   },
-                  child: Text("Đóng"),
+                  child: const Text("Đóng"),
                 ),
               ],
             ),
