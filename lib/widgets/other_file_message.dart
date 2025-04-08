@@ -30,12 +30,18 @@ class OtherFileMessage extends StatelessWidget {
     required this.isMe,
   });
 
+  String _formatFileName() {
+    int firstSeperator = fileName.indexOf("_");
+    int fileExtensionSeperator = fileName.lastIndexOf(".");
+    return fileName.substring(firstSeperator + 1, fileExtensionSeperator);
+  }
+
   @override
   Widget build(BuildContext context) {
-    String fileFullName = fileName;
+    String fileFullName = _formatFileName();
 
     return SizedBox(
-      width: MediaQuery.of(context).size.width * 0.6,
+      width: MediaQuery.of(context).size.width * 0.65,
       child: ListTile(
         dense: true,
         visualDensity: VisualDensity(horizontal: VisualDensity.maximumDensity),
@@ -50,9 +56,24 @@ class OtherFileMessage extends StatelessWidget {
               Icons.file_copy_sharp,
               size: 23,
             ),
-        title: Text(
-          fileFullName.replaceRange(10, fileFullName.length - 20, "..."),
-          maxLines: 2,
+        title: Text.rich(
+          TextSpan(
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.bold,
+            ),
+            text: fileFullName,
+            children: [
+              TextSpan(
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                ),
+                text: fileExtension,
+              )
+            ],
+          ),
+          maxLines: 3,
           style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.bold,
