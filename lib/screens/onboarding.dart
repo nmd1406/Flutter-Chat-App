@@ -1,4 +1,6 @@
+import 'package:chat_app/providers/first_time_opening_app.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lottie/lottie.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -24,16 +26,16 @@ List<Map<String, String>> _onboardingData = [
   }
 ];
 
-class OnboardingSceen extends StatefulWidget {
-  const OnboardingSceen({
+class OnboardingScreen extends ConsumerStatefulWidget {
+  const OnboardingScreen({
     super.key,
   });
 
   @override
-  State<OnboardingSceen> createState() => _OnboardingSceenState();
+  ConsumerState<OnboardingScreen> createState() => _OnboardingSceenState();
 }
 
-class _OnboardingSceenState extends State<OnboardingSceen> {
+class _OnboardingSceenState extends ConsumerState<OnboardingScreen> {
   final PageController _pageController = PageController(initialPage: 0);
   int _selectedPage = 0;
 
@@ -45,7 +47,8 @@ class _OnboardingSceenState extends State<OnboardingSceen> {
 
   void _completeOnboarding() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setBool("isFirstTime", false);
+    bool isFirstTime = await prefs.setBool("isFirstTime", false);
+    ref.read(firstTimeOpeningAppProvider.notifier).state = isFirstTime;
 
     if (mounted) {
       Navigator.pushReplacement(

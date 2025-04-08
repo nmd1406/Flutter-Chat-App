@@ -1,10 +1,11 @@
+import 'package:chat_app/providers/first_time_opening_app.dart';
 import 'package:chat_app/screens/home.dart';
 import 'package:chat_app/screens/onboarding.dart';
 import 'package:chat_app/services/notification_service.dart';
-import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'firebase_options.dart';
 
@@ -18,14 +19,6 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  await FirebaseAppCheck.instance.activate(
-    webProvider: ReCaptchaV3Provider('recaptcha-v3-site-key'),
-    androidProvider: AndroidProvider.debug,
-    appleProvider: AppleProvider.debug,
-  );
-
-  SharedPreferences prefs = await SharedPreferences.getInstance();
-  bool isFirstTime = prefs.getBool("isFirstTime") ?? true;
 
   await NotificationService.initialize();
   await NotificationService.saveFCMToken();
@@ -33,21 +26,41 @@ void main() async {
   await NotificationService.backgroundNotification();
   await NotificationService.foregroundNotification();
 
-  runApp(App(isFirstTime: isFirstTime));
+  runApp(
+    ProviderScope(
+      child: App(),
+    ),
+  );
 }
 
-class App extends StatelessWidget {
-  final bool isFirstTime;
+class App extends ConsumerStatefulWidget {
+  const App({super.key});
 
-  const App({
-    super.key,
-    required this.isFirstTime,
-  });
+  @override
+  ConsumerState<App> createState() => _AppState();
+}
+
+class _AppState extends ConsumerState<App> {
+  bool _isFirstTime = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _checkFirstTime();
+  }
+
+  Future<void> _checkFirstTime() async {
+    final prefs = await SharedPreferences.getInstance();
+    final isFirstTime = prefs.getBool('isFirstTime') ?? true;
+    ref.read(firstTimeOpeningAppProvider.notifier).state = isFirstTime;
+  }
 
   @override
   Widget build(BuildContext context) {
+    _isFirstTime = ref.watch(firstTimeOpeningAppProvider);
     return MaterialApp(
       navigatorKey: navigatorKey,
+      debugShowCheckedModeBanner: false,
       title: 'FlutterChat',
       theme: ThemeData().copyWith(
         colorScheme: ColorScheme.fromSeed(
@@ -61,8 +74,8 @@ class App extends StatelessWidget {
       routes: {
         "/auth": (context) => AuthScreen(),
       },
-      home: isFirstTime
-          ? OnboardingSceen()
+      home: _isFirstTime
+          ? const OnboardingScreen()
           : StreamBuilder(
               stream: FirebaseAuth.instance.authStateChanges(),
               builder: (context, snapshot) {
@@ -70,7 +83,6 @@ class App extends StatelessWidget {
                   return const SplashScreen();
                 }
                 if (snapshot.hasData) {
-                  // return const ChatScreen();
                   return const HomeScreen();
                 }
                 return const AuthScreen();

@@ -1,8 +1,10 @@
 import 'dart:io';
 
 import 'package:chat_app/screens/forget_password.dart';
+import 'package:chat_app/screens/home.dart';
 import 'package:chat_app/services/auth_service.dart';
 import 'package:chat_app/widgets/user_image_picker.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:lottie/lottie.dart';
@@ -28,6 +30,18 @@ class _AuthScreenState extends State<AuthScreen> with TickerProviderStateMixin {
   String _enteredUsername = "";
   File? _selectedImage;
 
+  @override
+  void initState() {
+    super.initState();
+    FirebaseAuth.instance.authStateChanges().listen((user) {
+      if (user != null) {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (context) => HomeScreen()),
+        );
+      }
+    });
+  }
+
   void _submit() async {
     final isValid = _formKey.currentState!.validate();
 
@@ -36,7 +50,7 @@ class _AuthScreenState extends State<AuthScreen> with TickerProviderStateMixin {
     }
 
     _formKey.currentState!.save();
-    String? errorMessage = "";
+    String? errorMessage;
     setState(() {
       _isAuthenticating = true;
     });
@@ -53,19 +67,20 @@ class _AuthScreenState extends State<AuthScreen> with TickerProviderStateMixin {
       );
     }
 
-    if (mounted) {
+    if (mounted && errorMessage != null) {
       ScaffoldMessenger.of(context).clearSnackBars();
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(errorMessage ?? "Xác thực thất bại."),
+          content: Text(errorMessage),
         ),
       );
-      setState(() {
-        _isAuthenticating = false;
-      });
-
-      return;
     }
+
+    setState(() {
+      _isAuthenticating = false;
+    });
+
+    return;
   }
 
   Future<File> _getAssetImageAsFile() async {
