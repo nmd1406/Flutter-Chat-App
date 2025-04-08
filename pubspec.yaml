@@ -40,7 +40,6 @@ dependencies:
   firebase_storage: ^12.3.3
   cloud_firestore: ^5.4.4
   firebase_messaging: ^15.2.4
-  firebase_app_check: ^0.3.2+2
   path_provider: ^2.1.5
   file_picker: ^9.0.0
   path: ^1.9.0
@@ -62,6 +61,8 @@ dependencies:
   intl: ^0.20.2
   app_settings: ^5.2.0
   shared_preferences: ^2.5.3
+  flutter_launcher_icons: ^0.14.3
+  flutter_riverpod: ^2.6.1
   
 
 dev_dependencies:
@@ -93,6 +94,7 @@ flutter:
     - assets/images/default-avatar-profile-icon-of-social-media-user-vector.jpg
     - assets/images/chats.png
     - assets/images/conversation.png
+    - assets/images/icon.png
 
     - assets/lottie/auth-screen.json
     - assets/lottie/chat.json
@@ -132,3 +134,10 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
+
+flutter_launcher_icons:
+  android: "launcher_icon"
+  ios: "AppIcon"
+  min_sdk_android: 31
+  image_path: "assets/images/icon.png"
+  remove_alpha_ios: true
